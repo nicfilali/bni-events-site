@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ajouter un événement | Agenda Networking BNI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f5f6fa;
+      color: #1a1a2e;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+      color: white;
+      padding: 36px 24px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(249,168,37,0.15) 0%, transparent 70%);
+    }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #f9a825 0%, #ff6f00 100%);
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    header h1 {
+      font-size: clamp(22px, 4vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    header p.subtitle {
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+      max-width: 560px;
+      margin: 0 auto 18px;
+      position: relative;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 7px 18px;
+      border-radius: 30px;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .back-link:hover { background: rgba(255,255,255,0.2); }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    .intro {
+      background: white;
+      border-left: 4px solid #f9a825;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .intro h2 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #1a1a2e;
+    }
+    .intro p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    form {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .form-grid .full { grid-column: 1 / -1; }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+    .field label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .field label .required { color: #e53935; }
+    .field input,
+    .field select,
+    .field textarea {
+      background: #f8f9ff;
+      border: 1.5px solid #e0e0f0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #1a1a2e;
+      transition: all 0.2s;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: none;
+      border-color: #f9a825;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(249,168,37,0.15);
+    }
+    .field textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .field .hint {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #1a1a2e;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin: 28px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f0f0f5;
+    }
+    .section-title:first-of-type { margin-top: 0; }
+
+    .submit-row {
+      margin-top: 28px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+      color: white;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(229,57,53,0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(229,57,53,0.4);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .submit-note {
+      font-size: 12px;
+      color: #888;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .success {
+      display: none;
+      background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+      color: white;
+      padding: 24px 28px;
+      border-radius: 16px;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .success h3 { font-size: 18px; margin-bottom: 8px; }
+    .success p { font-size: 14px; opacity: 0.92; margin-bottom: 14px; }
+    .success a {
+      display: inline-block;
+      background: white;
+      color: #1b5e20;
+      padding: 10px 24px;
+      border-radius: 24px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      form { padding: 24px 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">⭐ Membres BNI</div>
+  <h1>Ajouter un événement</h1>
+  <p class="subtitle">Proposez un événement de networking à ajouter à l'agenda. Il sera examiné sous 48h et publié avec un badge <strong>Membre BNI</strong>.</p>
+  <a href="index.html" class="back-link">← Retour à l'agenda</a>
+</header>
+
+<main>
+
+  <div class="intro">
+    <h2>Comment ça marche ?</h2>
+    <p>Remplissez les champs ci-dessous puis cliquez sur <strong>Envoyer</strong>. Votre client mail s'ouvrira avec le contenu pré-rempli ; il ne vous restera qu'à envoyer l'email à l'organisateur de l'agenda, qui l'ajoutera au site.</p>
+  </div>
+
+  <form id="eventForm" onsubmit="return handleSubmit(event)">
+
+    <div class="section-title">📅 L'événement</div>
+    <div class="form-grid">
+      <div class="field full">
+        <label>Nom de l'événement <span class="required">*</span></label>
+        <input type="text" name="title" required placeholder="Ex : Afterwork Networking à La Louvière" />
+      </div>
+
+      <div class="field">
+        <label>Date <span class="required">*</span></label>
+        <input type="date" name="date" required />
+      </div>
+
+      <div class="field">
+        <label>Région <span class="required">*</span></label>
+        <select name="region" required>
+          <option value="">— Choisir —</option>
+          <option value="Brabant Wallon">🔵 Brabant Wallon</option>
+          <option value="Bruxelles">🟣 Bruxelles</option>
+          <option value="Hainaut">🟢 Hainaut</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Heure de début <span class="required">*</span></label>
+        <input type="time" name="startTime" required />
+      </div>
+
+      <div class="field">
+        <label>Heure de fin</label>
+        <input type="time" name="endTime" />
+        <span class="hint">Laissez vide si à confirmer</span>
+      </div>
+
+      <div class="field full">
+        <label>Lieu / adresse complète <span class="required">*</span></label>
+        <input type="text" name="location" required placeholder="Ex : Workall Business Center, 128 Ch. de Redemont, 7100 La Louvière" />
+      </div>
+    </div>
+
+    <div class="section-title">💰 Prix & inscription</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Prix <span class="required">*</span></label>
+        <input type="text" name="price" required placeholder="Ex : 25 € ou Gratuit" />
+      </div>
+
+      <div class="field">
+        <label>Type de prix</label>
+        <select name="priceType">
+          <option value="paid">Payant</option>
+          <option value="free">Gratuit</option>
+          <option value="members">Réservé membres</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <label>Lien d'information <span class="required">*</span></label>
+        <input type="url" name="infoUrl" required placeholder="https://..." />
+        <span class="hint">URL de la page événement, avec les détails et le formulaire d'inscription</span>
+      </div>
+    </div>
+
+    <div class="section-title">👤 Vous (le proposeur)</div>
+    <div class="form-grid">
+      <div class="field">
+        <label>Votre nom <span class="required">*</span></label>
+        <input type="text" name="submitterName" required placeholder="Prénom Nom" />
+      </div>
+
+      <div class="field">
+        <label>Votre email <span class="required">*</span></label>
+        <input type="email" name="submitterEmail" required placeholder="vous@exemple.be" />
+      </div>
+
+      <div class="field full">
+        <label>Votre club BNI</label>
+        <input type="text" name="bniChapter" placeholder="Ex : BNI Succès Waterloo" />
+      </div>
+
+      <div class="field full">
+        <label>Notes / informations complémentaires</label>
+        <textarea name="notes" placeholder="Ex : Walking dinner inclus · parking gratuit · public visé..."></textarea>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button type="submit" class="btn-primary">📨 Envoyer la proposition</button>
+      <span class="submit-note">Votre client mail s'ouvrira avec le contenu pré-rempli.</span>
+    </div>
+
+  </form>
+
+  <div class="success" id="successBox">
+    <h3>✅ Votre proposition est prête !</h3>
+    <p>Votre client mail s'est ouvert dans une nouvelle fenêtre. Cliquez sur <strong>Envoyer</strong> dans celui-ci pour finaliser votre proposition. Vous recevrez une confirmation sous 48h.</p>
+    <a href="index.html">← Retour à l'agenda</a>
+  </div>
+
+</main>
+
+<script>
+function handleSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+
+  const title = data.get('title');
+  const date = data.get('date');  // YYYY-MM-DD
+  const region = data.get('region');
+  const startTime = data.get('startTime');
+  const endTime = data.get('endTime');
+  const location = data.get('location');
+  const price = data.get('price');
+  const priceType = data.get('priceType');
+  const infoUrl = data.get('infoUrl');
+  const notes = data.get('notes') || '(aucune)';
+  const submitterName = data.get('submitterName');
+  const submitterEmail = data.get('submitterEmail');
+  const bniChapter = data.get('bniChapter') || '(non précisé)';
+
+  // Format date for display
+  const dateObj = new Date(date);
+  const dateFmt = dateObj.toLocaleDateString('fr-BE', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
+
+  // Time string
+  const timeStr = endTime ? `${startTime} – ${endTime}` : startTime;
+
+  // Build mailto body
+  const subject = `[Agenda BNI] Nouvel événement : ${title}`;
+  const body = `Bonjour,
+
+Je souhaite proposer l'ajout de cet événement à l'agenda networking BNI :
+
+═══════════════════════════════════
+📅 ÉVÉNEMENT
+═══════════════════════════════════
+Titre : ${title}
+Date : ${dateFmt}
+Heure : ${timeStr}
+Région : ${region}
+Lieu : ${location}
+
+═══════════════════════════════════
+💰 PRIX
+═══════════════════════════════════
+Prix : ${price}
+Type : ${priceType}
+
+═══════════════════════════════════
+🔗 LIEN D'INSCRIPTION
+═══════════════════════════════════
+${infoUrl}
+
+═══════════════════════════════════
+📝 NOTES
+═══════════════════════════════════
+${notes}
+
+═══════════════════════════════════
+👤 PROPOSÉ PAR
+═══════════════════════════════════
+Nom : ${submitterName}
+Email : ${submitterEmail}
+Club BNI : ${bniChapter}
+
+---
+Merci de confirmer la publication. Cet événement apparaîtra avec le badge "Membre BNI" sur l'agenda.
+`;
+
+  // Build JSON snippet for quick copy-paste into events array
+  const [year, month, day] = date.split('-');
+  const monthAbbr = ['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'][parseInt(month)-1];
+  const jsonSnippet = `
+╭─ SNIPPET À COPIER DANS events[] ─╮
+  {
+    region: "${region}",
+    date: "${date}",
+    day: "${day}", month: "${monthAbbr}",
+    organizer: "${submitterName}${bniChapter !== '(non précisé)' ? ' · ' + bniChapter : ''}",
+    title: "${title.replace(/"/g, '\\"')}",
+    time: "${timeStr}",
+    location: "${location.replace(/"/g, '\\"')}",
+    price: "${price.replace(/"/g, '\\"')}",
+    priceType: "${priceType}",
+    infoUrl: "${infoUrl}",
+    registerUrl: "${infoUrl}",
+    notes: "${notes === '(aucune)' ? '' : notes.replace(/"/g, '\\"').replace(/\\n/g, ' · ')}",
+    bniMember: true
+  },
+╰──────────────────────────────────╯
+`;
+
+  const fullBody = body + jsonSnippet;
+
+  // Open mail client with pre-filled content
+  const mailto = `mailto:nicolas.filali@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(fullBody)}`;
+  window.location.href = mailto;
+
+  // Show success message
+  form.style.display = 'none';
+  document.getElementById('successBox').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  return false;
+}
+</script>
+
+</body>
+</html>

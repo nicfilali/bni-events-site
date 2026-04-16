@@ -95,9 +95,76 @@
     }
     .filter-btn:hover { border-color: #1a1a2e; color: #1a1a2e; }
     .filter-btn.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
-    .filter-btn[data-region="Brabant Wallon"].active { background: #1565c0; border-color: #1565c0; }
-    .filter-btn[data-region="Bruxelles"].active { background: #6a1b9a; border-color: #6a1b9a; }
-    .filter-btn[data-region="Hainaut"].active { background: #2e7d32; border-color: #2e7d32; }
+    .filter-btn[data-filter="region:Brabant Wallon"].active { background: #1565c0; border-color: #1565c0; }
+    .filter-btn[data-filter="region:Bruxelles"].active { background: #6a1b9a; border-color: #6a1b9a; }
+    .filter-btn[data-filter="region:Hainaut"].active { background: #2e7d32; border-color: #2e7d32; }
+    .filter-btn[data-filter="nextweek"].active { background: #e53935; border-color: #e53935; }
+    .filter-btn[data-filter="bnimember"].active { background: #f9a825; border-color: #f9a825; color: #1a1a2e; }
+
+    /* ── Add event button ── */
+    .add-event-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #e53935 !important;
+      color: white !important;
+      border-color: #e53935 !important;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(229,57,53,0.25);
+    }
+    .add-event-btn:hover {
+      background: #c62828 !important;
+      border-color: #c62828 !important;
+      color: white !important;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(229,57,53,0.35);
+    }
+
+    /* ── BNI Member badge ── */
+    .bni-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: linear-gradient(135deg, #f9a825 0%, #ff6f00 100%);
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(249,168,37,0.35);
+    }
+    .event-card.bni-card {
+      border: 2px solid #f9a825;
+      background: linear-gradient(135deg, #fffef5 0%, #ffffff 100%);
+    }
+    .event-card.bni-card:hover {
+      box-shadow: 0 8px 24px rgba(249,168,37,0.25);
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px 24px;
+      color: #777;
+      background: white;
+      border: 2px dashed #e0e0f0;
+      border-radius: 16px;
+    }
+    .empty-state h3 { font-size: 18px; color: #1a1a2e; margin-bottom: 8px; }
+    .empty-state p { font-size: 14px; margin-bottom: 16px; }
+    .empty-state a {
+      display: inline-block;
+      background: #e53935;
+      color: white;
+      padding: 10px 22px;
+      border-radius: 24px;
+      font-size: 13px;
+      font-weight: 700;
+    }
 
     /* ── Stats Bar ── */
     .stats-bar {
@@ -377,10 +444,13 @@
 
 <!-- FILTERS -->
 <div class="filters">
-  <button class="filter-btn active" data-region="all" onclick="filterRegion('all', this)">🗺️ Toutes les régions</button>
-  <button class="filter-btn" data-region="Brabant Wallon" onclick="filterRegion('Brabant Wallon', this)">🔵 Brabant Wallon</button>
-  <button class="filter-btn" data-region="Bruxelles" onclick="filterRegion('Bruxelles', this)">🟣 Bruxelles</button>
-  <button class="filter-btn" data-region="Hainaut" onclick="filterRegion('Hainaut', this)">🟢 Hainaut</button>
+  <button class="filter-btn active" data-filter="all" onclick="applyFilter('all', this)">🗺️ Toutes les régions</button>
+  <button class="filter-btn" data-filter="nextweek" onclick="applyFilter('nextweek', this)">📆 Semaine prochaine</button>
+  <button class="filter-btn" data-filter="bnimember" onclick="applyFilter('bnimember', this)">⭐ Membres BNI</button>
+  <button class="filter-btn" data-filter="region:Brabant Wallon" onclick="applyFilter('region:Brabant Wallon', this)">🔵 Brabant Wallon</button>
+  <button class="filter-btn" data-filter="region:Bruxelles" onclick="applyFilter('region:Bruxelles', this)">🟣 Bruxelles</button>
+  <button class="filter-btn" data-filter="region:Hainaut" onclick="applyFilter('region:Hainaut', this)">🟢 Hainaut</button>
+  <a href="ajouter-evenement.html" class="filter-btn add-event-btn">➕ Ajouter un événement</a>
 </div>
 
 <!-- MAIN -->
@@ -903,7 +973,8 @@ const events = [
     priceType: "paid",
     infoUrl: "https://entrepreneurs-inspirants.be/",
     registerUrl: "https://entrepreneurs-inspirants.be/",
-    notes: "18h Drink · 19h Conférence · 20h30 Walking dinner · 23h Clôture"
+    notes: "18h Drink · 19h Conférence · 20h30 Walking dinner · 23h Clôture",
+    bniMember: true
   },
   {
     region: "Bruxelles",
@@ -1232,8 +1303,11 @@ function iconSVG(type) {
 function renderCard(ev, cls) {
   const priceClass = ev.priceType === 'free' ? 'free' : ev.priceType === 'members' ? 'members' : '';
   const noteHtml = ev.notes ? `<div class="meta-item">${iconSVG('note')}<span>${ev.notes}</span></div>` : '';
+  const isBNI = ev.bniMember === true;
+  const bniBadge = isBNI ? `<span class="bni-badge">⭐ Membre BNI</span>` : '';
+  const cardClasses = 'event-card' + (isBNI ? ' bni-card' : '');
   return `
-    <div class="event-card" data-region="${ev.region}" data-date="${ev.date}">
+    <div class="${cardClasses}" data-region="${ev.region}" data-date="${ev.date}" data-bni="${isBNI}">
       <div class="card-top">
         <div class="card-date ${cls}-color">
           <div class="day">${ev.day}</div>
@@ -1243,6 +1317,7 @@ function renderCard(ev, cls) {
           <div class="card-organizer-row">
             ${getLogosHtml(ev.organizer)}
             <span class="card-organizer">${ev.organizer}</span>
+            ${bniBadge}
           </div>
           <div class="card-title">${ev.title}</div>
           <div class="card-meta">
@@ -1265,9 +1340,18 @@ function getWeekRange() {
   const day = now.getDay(); // 0=Sun
   const diff = now.getDate() - day + (day === 0 ? -6 : 1);
   const mon = new Date(now.setDate(diff));
-  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  mon.setHours(0,0,0,0);
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
   const fmt = d => d.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long' });
   return { mon, sun, label: `Semaine du ${fmt(mon)} au ${fmt(sun)} ${sun.getFullYear()}` };
+}
+
+function getNextWeekRange() {
+  const { mon } = getWeekRange();
+  const nextMon = new Date(mon); nextMon.setDate(mon.getDate() + 7); nextMon.setHours(0,0,0,0);
+  const nextSun = new Date(nextMon); nextSun.setDate(nextMon.getDate() + 6); nextSun.setHours(23,59,59,999);
+  const fmt = d => d.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long' });
+  return { mon: nextMon, sun: nextSun, label: `Semaine du ${fmt(nextMon)} au ${fmt(nextSun)} ${nextSun.getFullYear()}` };
 }
 
 function isThisWeek(dateStr, mon, sun) {
@@ -1314,20 +1398,96 @@ function init() {
   });
 }
 
-function filterRegion(region, btn) {
+function applyFilter(filter, btn) {
+  // Toggle active state on buttons (skip anchor buttons like "Ajouter un événement")
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn && btn.tagName === 'BUTTON') btn.classList.add('active');
 
   const sections = ['bw', 'bxl', 'hai'];
   const sectionMap = { bw: 'Brabant Wallon', bxl: 'Bruxelles', hai: 'Hainaut' };
 
+  // Determine region visibility + card-level filter
+  let regionFilter = null;  // null = all regions
+  let cardMatcher = null;   // fn(card) => bool, null = all cards
+
+  if (filter.startsWith('region:')) {
+    regionFilter = filter.slice(7);
+  } else if (filter === 'nextweek') {
+    const { mon, sun } = getNextWeekRange();
+    cardMatcher = card => {
+      const d = new Date(card.dataset.date);
+      return d >= mon && d <= sun;
+    };
+  } else if (filter === 'bnimember') {
+    cardMatcher = card => card.dataset.bni === 'true';
+  }
+
   sections.forEach(s => {
     const secEl = document.getElementById('section-' + s);
     const gridEl = document.getElementById('grid-' + s);
-    const show = region === 'all' || sectionMap[s] === region;
-    secEl.style.display = show ? 'flex' : 'none';
-    gridEl.style.display = show ? 'grid' : 'none';
+    const regionName = sectionMap[s];
+    const regionVisible = regionFilter === null || regionFilter === regionName;
+
+    if (!regionVisible) {
+      secEl.style.display = 'none';
+      gridEl.style.display = 'none';
+      return;
+    }
+
+    // Apply card-level filter (hide non-matching cards, remove any empty-state)
+    const emptyState = gridEl.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+
+    const cards = gridEl.querySelectorAll('.event-card');
+    let visibleCount = 0;
+    cards.forEach(card => {
+      const match = cardMatcher === null ? true : cardMatcher(card);
+      card.classList.toggle('hidden', !match);
+      if (match) visibleCount++;
+    });
+
+    if (visibleCount === 0) {
+      // Hide section header when empty
+      secEl.style.display = 'none';
+      gridEl.style.display = 'none';
+    } else {
+      secEl.style.display = 'flex';
+      gridEl.style.display = 'grid';
+    }
   });
+
+  // Global empty state if ALL regions have 0 visible events
+  const anyVisible = sections.some(s => document.getElementById('section-' + s).style.display !== 'none');
+  const globalEmpty = document.getElementById('globalEmpty');
+  if (!anyVisible) {
+    if (!globalEmpty) {
+      const main = document.querySelector('main');
+      const msg = document.createElement('div');
+      msg.id = 'globalEmpty';
+      msg.className = 'empty-state';
+      msg.style.marginTop = '24px';
+      if (filter === 'bnimember') {
+        msg.innerHTML = `<h3>⭐ Aucun événement Membre BNI pour le moment</h3>
+          <p>Sois le premier à proposer le tien ! Les événements soumis par les membres apparaîtront ici.</p>
+          <a href="ajouter-evenement.html">➕ Ajouter un événement</a>`;
+      } else if (filter === 'nextweek') {
+        msg.innerHTML = `<h3>📆 Pas d'événement la semaine prochaine</h3>
+          <p>Aucun événement programmé pour les 7 prochains jours. Revenez bientôt ou proposez-en un.</p>
+          <a href="ajouter-evenement.html">➕ Ajouter un événement</a>`;
+      } else {
+        msg.innerHTML = `<h3>Aucun événement ne correspond à ce filtre</h3>`;
+      }
+      main.appendChild(msg);
+    }
+  } else if (globalEmpty) {
+    globalEmpty.remove();
+  }
+}
+
+// Backward compat alias (ancien nom utilisé par les boutons)
+function filterRegion(region, btn) {
+  const filter = region === 'all' ? 'all' : 'region:' + region;
+  applyFilter(filter, btn);
 }
 
 init();
