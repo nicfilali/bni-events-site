@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agenda Networking | Brabant Wallon · Bruxelles · Hainaut</title>
+  <title>Agenda des événements Networking | Brabant Wallon · Bruxelles · Hainaut</title>
   <style>
     /* ── Reset & Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -420,17 +420,13 @@
 <!-- HEADER -->
 <header>
   <div class="header-badge">📅 Agenda Networking</div>
-  <h1>Networking <span>Brabant Wallon</span><br>Bruxelles · Hainaut</h1>
-  <p class="subtitle">Tous les événements de networking de la région — mis à jour chaque semaine pour votre club BNI</p>
+  <h1>Agenda des événements <span>Networking</span></h1>
+  <p class="subtitle">Brabant Wallon · Bruxelles · Hainaut — mis à jour chaque semaine pour votre club BNI</p>
   <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap;">
     <div class="week-info">
       <span class="dot"></span>
       <span id="week-label">Semaine du 6 au 12 avril 2026</span>
     </div>
-    <a href="#soumettre" style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.12); border:1.5px solid rgba(255,255,255,0.3); color:white; font-size:13px; font-weight:600; padding:7px 18px; border-radius:30px; text-decoration:none; transition:all 0.2s;"
-      onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
-      📩 Proposer un événement
-    </a>
   </div>
 </header>
 
@@ -490,135 +486,6 @@
   <div class="events-grid" id="grid-hai"></div>
 
 </main>
-
-<!-- ═══════════════════════════════════════════════════════
-     SECTION FORMULAIRE DE SOUMISSION PUBLIC
-════════════════════════════════════════════════════════ -->
-<section id="soumettre" style="background:white; border-top:3px solid #e53935; padding:40px 16px 48px;">
-  <div style="max-width:680px; margin:0 auto;">
-    <div style="text-align:center; margin-bottom:28px;">
-      <span style="display:inline-block; background:#e53935; color:white; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:4px 14px; border-radius:20px; margin-bottom:12px;">📩 Organisateurs</span>
-      <h2 style="font-size:24px; font-weight:800; color:#1a1a2e; margin:0 0 8px;">Proposer un événement</h2>
-      <p style="color:#666; font-size:14px; margin:0;">Votre événement sera examiné avant publication. Réponse sous 48h.</p>
-    </div>
-
-    <form id="submitForm" style="background:#f8f9ff; border-radius:16px; padding:28px; border:1px solid #e8e8f0;">
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
-
-        <div style="grid-column:1/-1;">
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Nom de l'événement *</label>
-          <input type="text" id="f-nom" required placeholder="Ex : Afterwork Networking Wavre"
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-        <div>
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Organisateur *</label>
-          <input type="text" id="f-org" required placeholder="Nom du club / association"
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-        <div>
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Région *</label>
-          <select id="f-region" required style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; background:white; box-sizing:border-box;">
-            <option value="">— Choisir —</option>
-            <option>Brabant Wallon</option>
-            <option>Bruxelles</option>
-            <option>Hainaut</option>
-            <option>Namur</option>
-            <option>Liège</option>
-          </select>
-        </div>
-
-        <div>
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Date de l'événement *</label>
-          <input type="date" id="f-date" required
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-        <div>
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Heure</label>
-          <input type="text" id="f-heure" placeholder="Ex : 18h30 – 21h00"
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-        <div>
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Prix (€)</label>
-          <input type="text" id="f-prix" placeholder="Ex : 25 € ou Gratuit"
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-        <div style="grid-column:1/-1;">
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Lieu / Adresse *</label>
-          <input type="text" id="f-lieu" required placeholder="Ex : Salle des Fêtes, Rue de la Paix 12, 1300 Wavre"
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-        <div style="grid-column:1/-1;">
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Lien d'inscription</label>
-          <input type="url" id="f-lien" placeholder="https://..."
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-        <div style="grid-column:1/-1;">
-          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Votre email de contact *</label>
-          <input type="email" id="f-email" required placeholder="vous@votreclub.be"
-            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
-        </div>
-
-      </div>
-
-      <div style="margin-top:20px; padding-top:16px; border-top:1px solid #e8e8f0; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <button type="submit"
-          style="background:#1a1a2e; color:white; border:none; padding:12px 28px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;">
-          📩 Envoyer ma proposition
-        </button>
-        <span style="font-size:12px; color:#999;">* Champs obligatoires · Validation sous 48h par Nic Filali (BNI)</span>
-      </div>
-
-      <div id="form-success" style="display:none; margin-top:16px; padding:14px 18px; background:#e8f5e9; border-radius:10px; color:#2e7d32; font-weight:600; font-size:14px;">
-        ✅ Merci ! Votre proposition a été envoyée. Vous recevrez une réponse sous 48h.
-      </div>
-    </form>
-  </div>
-</section>
-
-<script>
-document.getElementById('submitForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const nom    = document.getElementById('f-nom').value;
-  const org    = document.getElementById('f-org').value;
-  const region = document.getElementById('f-region').value;
-  const date   = document.getElementById('f-date').value;
-  const heure  = document.getElementById('f-heure').value;
-  const prix   = document.getElementById('f-prix').value;
-  const lieu   = document.getElementById('f-lieu').value;
-  const lien   = document.getElementById('f-lien').value;
-  const email  = document.getElementById('f-email').value;
-
-  const subject = encodeURIComponent(`[AGENDA BNI] Soumission événement : ${nom}`);
-  const body = encodeURIComponent(
-`📅 NOUVELLE PROPOSITION D'ÉVÉNEMENT — Agenda Networking BNI
-═══════════════════════════════════════════════
-
-🎯 Nom de l'événement : ${nom}
-🏢 Organisateur       : ${org}
-📍 Région             : ${region}
-📆 Date               : ${date}
-⏰ Heure              : ${heure || 'Non précisée'}
-📌 Lieu / Adresse     : ${lieu}
-💶 Prix               : ${prix || 'Non précisé'}
-🔗 Lien inscription   : ${lien || 'Non fourni'}
-📧 Contact            : ${email}
-
-═══════════════════════════════════════════════
-Soumis via l'Agenda Networking BNI — ${new Date().toLocaleDateString('fr-BE')}
-`);
-
-  window.location.href = `mailto:nicolas.filali@gmail.com?subject=${subject}&body=${body}`;
-  document.getElementById('form-success').style.display = 'block';
-  this.reset();
-});
-</script>
 
 <footer>
   <p>Présenté chaque jeudi au <strong>Club BNI</strong> · Mis à jour le <span id="update-date"></span></p>
@@ -1362,6 +1229,15 @@ function isThisWeek(dateStr, mon, sun) {
 function init() {
   // Sort by date
   events.sort((a, b) => a.date.localeCompare(b.date));
+
+  // Limiter à 8 semaines max à partir d'aujourd'hui (= 56 jours)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const maxDate = new Date(today);
+  maxDate.setDate(today.getDate() + 56);
+  for (let i = events.length - 1; i >= 0; i--) {
+    if (new Date(events[i].date) > maxDate) events.splice(i, 1);
+  }
 
   // Week range
   const { mon, sun, label } = getWeekRange();
