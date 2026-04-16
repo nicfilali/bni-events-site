@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agenda Networking | Brabant Wallon · Bruxelles · Hainaut</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f5f6fa;
+      color: #1a1a2e;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+      color: white;
+      padding: 36px 24px 28px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 70% 50%, rgba(229,57,53,0.15) 0%, transparent 70%);
+    }
+    .header-badge {
+      display: inline-block;
+      background: #e53935;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    header h1 {
+      font-size: clamp(22px, 4vw, 38px);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 6px;
+    }
+    header h1 span { color: #ef9a9a; }
+    header p.subtitle {
+      font-size: 14px;
+      color: rgba(255,255,255,0.65);
+      max-width: 520px;
+      margin: 0 auto 18px;
+    }
+    .week-info {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 30px;
+      padding: 7px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+    }
+    .week-info .dot { width: 8px; height: 8px; border-radius: 50%; background: #69f0ae; display: inline-block; }
+
+    /* ── Filters ── */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 24px;
+      background: white;
+      border-bottom: 1px solid #e8e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .filter-btn {
+      padding: 8px 18px;
+      border-radius: 24px;
+      border: 2px solid #e0e0f0;
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #444;
+    }
+    .filter-btn:hover { border-color: #1a1a2e; color: #1a1a2e; }
+    .filter-btn.active { background: #1a1a2e; color: white; border-color: #1a1a2e; }
+    .filter-btn[data-region="Brabant Wallon"].active { background: #1565c0; border-color: #1565c0; }
+    .filter-btn[data-region="Bruxelles"].active { background: #6a1b9a; border-color: #6a1b9a; }
+    .filter-btn[data-region="Hainaut"].active { background: #2e7d32; border-color: #2e7d32; }
+
+    /* ── Stats Bar ── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      padding: 16px 24px;
+      background: white;
+      border-bottom: 1px solid #e8e8f0;
+      flex-wrap: wrap;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-num { font-size: 24px; font-weight: 800; color: #1a1a2e; }
+    .stat-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-num.bw { color: #1565c0; }
+    .stat-num.bxl { color: #6a1b9a; }
+    .stat-num.hai { color: #2e7d32; }
+
+    /* ── Main Layout ── */
+    main { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
+
+    /* ── Section Header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      margin-top: 36px;
+    }
+    .section-header:first-of-type { margin-top: 0; }
+    .region-dot {
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a1a2e;
+    }
+    .section-header .count {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      color: white;
+    }
+
+    /* ── Event Cards ── */
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .event-card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #f0f0f8;
+    }
+    .event-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+    .event-card.hidden { display: none; }
+
+    .card-top {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+    .card-date {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 72px;
+      padding: 16px 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .card-date .day { font-size: 28px; line-height: 1; }
+    .card-date .month { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.85; margin-top: 2px; }
+    .card-info {
+      flex: 1;
+      padding: 14px 16px 12px 14px;
+      border-left: 1px solid rgba(0,0,0,0.06);
+    }
+    /* ── Organizer with logos ── */
+    .card-organizer-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+    }
+    .org-logo {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      object-fit: contain;
+      background: #f0f0f0;
+      border: 1px solid #e8e8f0;
+      flex-shrink: 0;
+    }
+    .org-logo-fallback {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      background: #1a1a2e;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: 0;
+    }
+    .card-organizer {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #777;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a2e;
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+    .card-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: #666;
+    }
+    .meta-item svg { flex-shrink: 0; opacity: 0.6; }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px 14px;
+      border-top: 1px solid #f5f5fa;
+      margin-top: auto;
+    }
+    .price-tag {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: #f5f5fa;
+      color: #555;
+    }
+    .price-tag.free { background: #e8f5e9; color: #2e7d32; }
+    .price-tag.members { background: #fff3e0; color: #e65100; }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-info {
+      background: #f0f0fa;
+      color: #444;
+    }
+    .btn-info:hover { background: #e0e0f5; }
+    .btn-register {
+      margin-left: auto;
+      background: #1a1a2e;
+      color: white;
+    }
+    .btn-register:hover { background: #0f3460; }
+    .btn-register.bw { background: #1565c0; }
+    .btn-register.bw:hover { background: #0d47a1; }
+    .btn-register.bxl { background: #6a1b9a; }
+    .btn-register.bxl:hover { background: #4a148c; }
+    .btn-register.hai { background: #2e7d32; }
+    .btn-register.hai:hover { background: #1b5e20; }
+
+    /* ── This Week Banner ── */
+    .this-week-banner {
+      background: linear-gradient(135deg, #e53935, #c62828);
+      color: white;
+      border-radius: 16px;
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .this-week-banner .icon { font-size: 28px; flex-shrink: 0; }
+    .this-week-banner h3 { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
+    .this-week-banner p { font-size: 13px; opacity: 0.85; }
+
+    /* ── Region colors ── */
+    .bw-color { background: #e3f0fd; color: #1565c0; }
+    .bxl-color { background: #f3e5f5; color: #6a1b9a; }
+    .hai-color { background: #e8f5e9; color: #2e7d32; }
+
+    .region-dot.bw { background: #1565c0; }
+    .region-dot.bxl { background: #6a1b9a; }
+    .region-dot.hai { background: #2e7d32; }
+
+    .count.bw { background: #1565c0; }
+    .count.bxl { background: #6a1b9a; }
+    .count.hai { background: #2e7d32; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 28px 16px;
+      background: #1a1a2e;
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+      margin-top: 40px;
+    }
+    footer strong { color: rgba(255,255,255,0.8); }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .events-grid { grid-template-columns: 1fr; }
+      .stats-bar { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-badge">📅 Agenda Networking</div>
+  <h1>Networking <span>Brabant Wallon</span><br>Bruxelles · Hainaut</h1>
+  <p class="subtitle">Tous les événements de networking de la région — mis à jour chaque semaine pour votre club BNI</p>
+  <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap;">
+    <div class="week-info">
+      <span class="dot"></span>
+      <span id="week-label">Semaine du 6 au 12 avril 2026</span>
+    </div>
+    <a href="#soumettre" style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.12); border:1.5px solid rgba(255,255,255,0.3); color:white; font-size:13px; font-weight:600; padding:7px 18px; border-radius:30px; text-decoration:none; transition:all 0.2s;"
+      onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+      📩 Proposer un événement
+    </a>
+  </div>
+</header>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num bw" id="count-bw">–</div><div class="stat-label">Brabant Wallon</div></div>
+  <div class="stat"><div class="stat-num bxl" id="count-bxl">–</div><div class="stat-label">Bruxelles</div></div>
+  <div class="stat"><div class="stat-num hai" id="count-hai">–</div><div class="stat-label">Hainaut</div></div>
+  <div class="stat"><div class="stat-num" id="count-total">–</div><div class="stat-label">Total événements</div></div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button class="filter-btn active" data-region="all" onclick="filterRegion('all', this)">🗺️ Toutes les régions</button>
+  <button class="filter-btn" data-region="Brabant Wallon" onclick="filterRegion('Brabant Wallon', this)">🔵 Brabant Wallon</button>
+  <button class="filter-btn" data-region="Bruxelles" onclick="filterRegion('Bruxelles', this)">🟣 Bruxelles</button>
+  <button class="filter-btn" data-region="Hainaut" onclick="filterRegion('Hainaut', this)">🟢 Hainaut</button>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- THIS WEEK BANNER -->
+  <div class="this-week-banner" id="thisWeekBanner" style="display:none">
+    <div class="icon">🔥</div>
+    <div>
+      <h3>Cette semaine</h3>
+      <p id="thisWeekText">Des événements ont lieu cette semaine !</p>
+    </div>
+  </div>
+
+  <!-- BRABANT WALLON -->
+  <div class="section-header" id="section-bw" data-section="Brabant Wallon">
+    <div class="region-dot bw"></div>
+    <h2>Brabant Wallon</h2>
+    <span class="count bw" id="badge-bw">0</span>
+  </div>
+  <div class="events-grid" id="grid-bw"></div>
+
+  <!-- BRUXELLES -->
+  <div class="section-header" id="section-bxl" data-section="Bruxelles">
+    <div class="region-dot bxl"></div>
+    <h2>Bruxelles</h2>
+    <span class="count bxl" id="badge-bxl">0</span>
+  </div>
+  <div class="events-grid" id="grid-bxl"></div>
+
+  <!-- HAINAUT -->
+  <div class="section-header" id="section-hai" data-section="Hainaut">
+    <div class="region-dot hai"></div>
+    <h2>Hainaut</h2>
+    <span class="count hai" id="badge-hai">0</span>
+  </div>
+  <div class="events-grid" id="grid-hai"></div>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION FORMULAIRE DE SOUMISSION PUBLIC
+════════════════════════════════════════════════════════ -->
+<section id="soumettre" style="background:white; border-top:3px solid #e53935; padding:40px 16px 48px;">
+  <div style="max-width:680px; margin:0 auto;">
+    <div style="text-align:center; margin-bottom:28px;">
+      <span style="display:inline-block; background:#e53935; color:white; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:4px 14px; border-radius:20px; margin-bottom:12px;">📩 Organisateurs</span>
+      <h2 style="font-size:24px; font-weight:800; color:#1a1a2e; margin:0 0 8px;">Proposer un événement</h2>
+      <p style="color:#666; font-size:14px; margin:0;">Votre événement sera examiné avant publication. Réponse sous 48h.</p>
+    </div>
+
+    <form id="submitForm" style="background:#f8f9ff; border-radius:16px; padding:28px; border:1px solid #e8e8f0;">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+
+        <div style="grid-column:1/-1;">
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Nom de l'événement *</label>
+          <input type="text" id="f-nom" required placeholder="Ex : Afterwork Networking Wavre"
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Organisateur *</label>
+          <input type="text" id="f-org" required placeholder="Nom du club / association"
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Région *</label>
+          <select id="f-region" required style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; background:white; box-sizing:border-box;">
+            <option value="">— Choisir —</option>
+            <option>Brabant Wallon</option>
+            <option>Bruxelles</option>
+            <option>Hainaut</option>
+            <option>Namur</option>
+            <option>Liège</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Date de l'événement *</label>
+          <input type="date" id="f-date" required
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Heure</label>
+          <input type="text" id="f-heure" placeholder="Ex : 18h30 – 21h00"
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+        <div>
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Prix (€)</label>
+          <input type="text" id="f-prix" placeholder="Ex : 25 € ou Gratuit"
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Lieu / Adresse *</label>
+          <input type="text" id="f-lieu" required placeholder="Ex : Salle des Fêtes, Rue de la Paix 12, 1300 Wavre"
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Lien d'inscription</label>
+          <input type="url" id="f-lien" placeholder="https://..."
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <label style="display:block; font-size:12px; font-weight:700; color:#444; margin-bottom:6px; text-transform:uppercase; letter-spacing:1px;">Votre email de contact *</label>
+          <input type="email" id="f-email" required placeholder="vous@votreclub.be"
+            style="width:100%; padding:10px 14px; border-radius:8px; border:1.5px solid #ddd; font-size:14px; font-family:inherit; box-sizing:border-box;">
+        </div>
+
+      </div>
+
+      <div style="margin-top:20px; padding-top:16px; border-top:1px solid #e8e8f0; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <button type="submit"
+          style="background:#1a1a2e; color:white; border:none; padding:12px 28px; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit;">
+          📩 Envoyer ma proposition
+        </button>
+        <span style="font-size:12px; color:#999;">* Champs obligatoires · Validation sous 48h par Nic Filali (BNI)</span>
+      </div>
+
+      <div id="form-success" style="display:none; margin-top:16px; padding:14px 18px; background:#e8f5e9; border-radius:10px; color:#2e7d32; font-weight:600; font-size:14px;">
+        ✅ Merci ! Votre proposition a été envoyée. Vous recevrez une réponse sous 48h.
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+document.getElementById('submitForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const nom    = document.getElementById('f-nom').value;
+  const org    = document.getElementById('f-org').value;
+  const region = document.getElementById('f-region').value;
+  const date   = document.getElementById('f-date').value;
+  const heure  = document.getElementById('f-heure').value;
+  const prix   = document.getElementById('f-prix').value;
+  const lieu   = document.getElementById('f-lieu').value;
+  const lien   = document.getElementById('f-lien').value;
+  const email  = document.getElementById('f-email').value;
+
+  const subject = encodeURIComponent(`[AGENDA BNI] Soumission événement : ${nom}`);
+  const body = encodeURIComponent(
+`📅 NOUVELLE PROPOSITION D'ÉVÉNEMENT — Agenda Networking BNI
+═══════════════════════════════════════════════
+
+🎯 Nom de l'événement : ${nom}
+🏢 Organisateur       : ${org}
+📍 Région             : ${region}
+📆 Date               : ${date}
+⏰ Heure              : ${heure || 'Non précisée'}
+📌 Lieu / Adresse     : ${lieu}
+💶 Prix               : ${prix || 'Non précisé'}
+🔗 Lien inscription   : ${lien || 'Non fourni'}
+📧 Contact            : ${email}
+
+═══════════════════════════════════════════════
+Soumis via l'Agenda Networking BNI — ${new Date().toLocaleDateString('fr-BE')}
+`);
+
+  window.location.href = `mailto:nicolas.filali@gmail.com?subject=${subject}&body=${body}`;
+  document.getElementById('form-success').style.display = 'block';
+  this.reset();
+});
+</script>
+
+<footer>
+  <p>Présenté chaque jeudi au <strong>Club BNI</strong> · Mis à jour le <span id="update-date"></span></p>
+  <p style="margin-top:6px">Sources : Made In Local · BNI Belgique · Cercle du Lion · B19 · Paprika Events · Alliance Centre BW · Entrepreneurs Inspirants</p>
+</footer>
+
+<script>
+// ─────────────────────────────────────────────
+// LOGOS — map organizer name → logo URL
+// ─────────────────────────────────────────────
+const logos = {
+  "Made In Local":          "https://logo.clearbit.com/madeinlocal.be",
+  "Cercle du Lion":         "https://logo.clearbit.com/cercledulion.be",
+  "B19":                    "https://logo.clearbit.com/b19.be",
+  "Paprika Events":         "https://logo.clearbit.com/paprikaevents.be",
+  "Alliance Centre BW":     "https://logo.clearbit.com/alliance-centrebw.be",
+  "B2BW CONNECT":           "https://logo.clearbit.com/b2bwconnect.be",
+  "Entrepreneurs Inspirants": "https://logo.clearbit.com/entrepreneurs-inspirants.be",
+  "BNI":                    "https://logo.clearbit.com/bnibelgique.be",
+  "UCM":                    "https://logo.clearbit.com/ucm.be",
+  "AKT CCIBW":              "https://logo.clearbit.com/akt-ccibw.be",
+  "Cercle de Wallonie":     "https://logo.clearbit.com/cercledewallonie.com",
+  "TuBusiness":             "https://logo.clearbit.com/tubusiness.be",
+  "La Bulle Networking":    "https://logo.clearbit.com/labulle-networking.pro",
+  "BECI":                   "https://logo.clearbit.com/beci.be",
+  "Cercle du Lac":          "https://logo.clearbit.com/cercledulac.be",
+  "Charleroi Entreprendre": "https://logo.clearbit.com/charleroientreprendre.be",
+  "CCI Hainaut":            "https://logo.clearbit.com/ccih.be",
+};
+
+// Returns HTML for one or more logos (organizer can be "A · B")
+function getLogosHtml(organizer) {
+  const parts = organizer.split(/\s*[·×]\s*/);
+  return parts.map(name => {
+    const trimmed = name.trim();
+    const url = logos[trimmed];
+    const initial = trimmed.replace(/[^A-Z0-9]/gi,'').slice(0,2).toUpperCase();
+    if (url) {
+      return `<img class="org-logo" src="${url}" alt="${trimmed}" title="${trimmed}"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'">
+        <span class="org-logo-fallback" style="display:none" title="${trimmed}">${initial}</span>`;
+    } else {
+      return `<span class="org-logo-fallback" title="${trimmed}">${initial}</span>`;
+    }
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// DATA — Éditer chaque semaine pour mettre à jour
+// ─────────────────────────────────────────────
+const events = [
+
+  // ═══════════════════════════════════
+  // BRABANT WALLON
+  // ═══════════════════════════════════
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-16",
+    day: "16", month: "AVR",
+    organizer: "Made In Local",
+    title: "Petit-déjeuner des entrepreneurs – Vanina Ickx",
+    time: "8h00 – 10h30",
+    location: "L'Arobase, Chaumont-Gistoux",
+    price: "30 €",
+    priceType: "paid",
+    infoUrl: "https://www.madeinlocal.be/event/le-petit-dejeuner-des-entrepreneurs-locaux-by-made-in-local-vanina-ickx-48/register",
+    registerUrl: "https://www.madeinlocal.be/event/le-petit-dejeuner-des-entrepreneurs-locaux-by-made-in-local-vanina-ickx-48/register",
+    notes: "Max 2 tickets · numéro BCE requis"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-16",
+    day: "16", month: "AVR",
+    organizer: "Made In Local",
+    title: "Bien dans mes baskets – Initiation au Padel",
+    time: "À confirmer",
+    location: "Waterloo",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://www.madeinlocal.be/event/bien-dans-mes-baskets-bien-dans-mon-business-initiation-au-padel-66/register",
+    registerUrl: "https://www.madeinlocal.be/event/bien-dans-mes-baskets-bien-dans-mon-business-initiation-au-padel-66/register",
+    notes: ""
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-21",
+    day: "21", month: "AVR",
+    organizer: "Cercle du Lion",
+    title: "Lunch & Learn – Nutrition & Sport pour votre énergie d'entrepreneur",
+    time: "12h00 – 14h00",
+    location: "Regus Braine-L'Alleud, Parc de L'Alliance",
+    price: "Gratuit (membres)",
+    priceType: "members",
+    infoUrl: "https://www.cercledulion.be/event/lunch-learn-79/register",
+    registerUrl: "https://www.cercledulion.be/event/lunch-learn-79/register",
+    notes: "Sandwichs à 12h · conférence à 12h30"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-23",
+    day: "23", month: "AVR",
+    organizer: "Made In Local · Alliance Centre BW",
+    title: "Afterwork – Découverte des pépites locales",
+    time: "Dès 17h30",
+    location: "CBC Louvain-la-Neuve, Av. Albert Einstein 7",
+    price: "Gratuit membres · 30 € HTVA",
+    priceType: "free",
+    infoUrl: "https://www.alliance-centrebw.be/event/afterwork-decouverte-des-pepites-locales-86/register",
+    registerUrl: "https://www.alliance-centrebw.be/event/afterwork-decouverte-des-pepites-locales-86/register",
+    notes: "Max 30 participants · parking IBA"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-05-19",
+    day: "19", month: "MAI",
+    organizer: "Cercle du Lion",
+    title: "Business Lunch – Rencontre avec des hockeyeurs de la Coupe du Monde",
+    time: "À confirmer",
+    location: "Waterloo",
+    price: "Membres",
+    priceType: "members",
+    infoUrl: "https://www.cercledulion.be/event/rencontre-avec-des-hockeyeurs-de-la-coupe-du-monde-78/register",
+    registerUrl: "https://www.cercledulion.be/event/rencontre-avec-des-hockeyeurs-de-la-coupe-du-monde-78/register",
+    notes: ""
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-05-20",
+    day: "20", month: "MAI",
+    organizer: "B2BW CONNECT · Alliance Centre BW",
+    title: "B2BW CONNECT – 22e édition – Speed Business Rally du BW",
+    time: "10h00 – 14h00",
+    location: "Van der Valk Waterloo, Ch. de Tervuren 198",
+    price: "35 € HTVA",
+    priceType: "paid",
+    infoUrl: "https://www.alliance-centrebw.be/event/b2bw-connect-a-waterloo-90/register",
+    registerUrl: "https://www.alliance-centrebw.be/event/b2bw-connect-a-waterloo-90/register",
+    notes: "Matchmaking B2B optimisé + lunch"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-06-02",
+    day: "02", month: "JUN",
+    organizer: "Cercle du Lion",
+    title: "Lunch Débat – Le politique et les grandes instances patronales de Wallonie",
+    time: "À confirmer",
+    location: "Nivelles",
+    price: "Membres",
+    priceType: "members",
+    infoUrl: "https://www.cercledulion.be/event/lunch-debat-avec-le-politique-et-les-grandes-instances-patronales-de-wallonie-77/register",
+    registerUrl: "https://www.cercledulion.be/event/lunch-debat-avec-le-politique-et-les-grandes-instances-patronales-de-wallonie-77/register",
+    notes: "Avec G.L. Bouchez, Y. Verougstraete, J. Hilgers"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-06-15",
+    day: "15", month: "JUN",
+    organizer: "Paprika Events",
+    title: "Conférence-Débat – La passion d'entreprendre (partenaire ABN AMRO)",
+    time: "À confirmer",
+    location: "Buzzy Nest, La Hulpe",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://paprikaevents.be/conferences-debat/",
+    registerUrl: "https://paprikaevents.be/conferences-debat/",
+    notes: "Panel : CEO ABN AMRO, Thomas Piron, CEO Leonidas"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-06-10",
+    day: "10", month: "JUN",
+    organizer: "Paprika Events",
+    title: "Masterclass – Prendre soin de soi et des autres avec Dominique Monami",
+    time: "À confirmer",
+    location: "Vignoble de Genval",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://paprikaevents.be/",
+    registerUrl: "https://paprikaevents.be/",
+    notes: "14 chefs d'entreprise · format exclusif"
+  },
+
+  // ── Cercle du Lac ──
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-09",
+    day: "09", month: "AVR",
+    organizer: "Cercle du Lac",
+    title: "Conférence midi – Grégoire Dallemagne, CEO de Luminus",
+    time: "12h15 – 14h00",
+    location: "Cercle du Lac, Bd Baudouin 1er 23, Louvain-la-Neuve",
+    price: "Membres",
+    priceType: "members",
+    infoUrl: "https://www.cercledulac.be/events",
+    registerUrl: "https://www.cercledulac.be/events",
+    notes: "Conférence avec CEO de Luminus"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-15",
+    day: "15", month: "AVR",
+    organizer: "Cercle du Lac",
+    title: "Conférence midi – Éléonore Simonet, Ministre belge",
+    time: "12h15 – 14h00",
+    location: "Cercle du Lac, Bd Baudouin 1er 23, Louvain-la-Neuve",
+    price: "Membres",
+    priceType: "members",
+    infoUrl: "https://www.cercledulac.be/events",
+    registerUrl: "https://www.cercledulac.be/events",
+    notes: "Conférence avec Ministre belge"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-17",
+    day: "17", month: "AVR",
+    organizer: "Cercle du Lac",
+    title: "Table Financière – Investir en 2026",
+    time: "12h15 – 14h00",
+    location: "Cercle du Lac, Bd Baudouin 1er 23, Louvain-la-Neuve",
+    price: "Membres",
+    priceType: "members",
+    infoUrl: "https://www.cercledulac.be/events",
+    registerUrl: "https://www.cercledulac.be/events",
+    notes: "Table thématique sur l'investissement"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-23",
+    day: "23", month: "AVR",
+    organizer: "Cercle du Lac",
+    title: "Workshop Networking + Afterwork",
+    time: "Après-midi / Soir",
+    location: "Cercle du Lac, Bd Baudouin 1er 23, Louvain-la-Neuve",
+    price: "Membres",
+    priceType: "members",
+    infoUrl: "https://www.cercledulac.be/events",
+    registerUrl: "https://www.cercledulac.be/events",
+    notes: "Workshop suivi d'un afterwork networking"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-05-12",
+    day: "12", month: "MAI",
+    organizer: "Cercle du Lac",
+    title: "Nice to Meet You – Networking matinal",
+    time: "Matin",
+    location: "Cercle du Lac, Bd Baudouin 1er 23, Louvain-la-Neuve",
+    price: "Membres",
+    priceType: "members",
+    infoUrl: "https://www.cercledulac.be/events",
+    registerUrl: "https://www.cercledulac.be/events",
+    notes: "Format networking spécial nouveaux membres"
+  },
+  // ── La Bulle Networking BW ──
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-07",
+    day: "07", month: "AVR",
+    organizer: "La Bulle Networking",
+    title: "Petit-déjeuner Networking – Van der Valk Nivelles",
+    time: "7h00 – 8h30",
+    location: "Van der Valk, Chau. de Mons 22, 1400 Nivelles",
+    price: "25 €",
+    priceType: "paid",
+    infoUrl: "https://labulle-networking.pro/evenements/",
+    registerUrl: "https://labulle-networking.pro/evenements/",
+    notes: ""
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-04-16",
+    day: "16", month: "AVR",
+    organizer: "La Bulle Networking",
+    title: "Réunion La Bulle BW – Louvain-la-Neuve",
+    time: "18h00 – 22h00",
+    location: "Traverse d'Esope 6, 1348 Louvain-la-Neuve",
+    price: "Gratuit",
+    priceType: "free",
+    infoUrl: "https://labulle-networking.pro/evenement/reunion-de-la-bulle-bw-louvain-la-neuve-16-avril-2026/",
+    registerUrl: "https://labulle-networking.pro/evenement/reunion-de-la-bulle-bw-louvain-la-neuve-16-avril-2026/",
+    notes: "Réunion mensuelle du cercle BW"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-05-05",
+    day: "05", month: "MAI",
+    organizer: "La Bulle Networking",
+    title: "Petit-déjeuner Networking – Van der Valk Nivelles",
+    time: "7h00 – 8h30",
+    location: "Van der Valk, Chau. de Mons 22, 1400 Nivelles",
+    price: "25 €",
+    priceType: "paid",
+    infoUrl: "https://labulle-networking.pro/evenement/petit-dejeuner-au-van-der-valk-a-nivelles-05-mai-2026/",
+    registerUrl: "https://labulle-networking.pro/evenement/petit-dejeuner-au-van-der-valk-a-nivelles-05-mai-2026/",
+    notes: ""
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-06-02",
+    day: "02", month: "JUN",
+    organizer: "La Bulle Networking",
+    title: "Petit-déjeuner Networking – Van der Valk Nivelles",
+    time: "7h00 – 8h30",
+    location: "Van der Valk, Chau. de Mons 22, 1400 Nivelles",
+    price: "25 €",
+    priceType: "paid",
+    infoUrl: "https://labulle-networking.pro/evenements/",
+    registerUrl: "https://labulle-networking.pro/evenements/",
+    notes: ""
+  },
+
+  // ═══════════════════════════════════
+  // BRUXELLES
+  // ═══════════════════════════════════
+  {
+    region: "Bruxelles",
+    date: "2026-04-13",
+    day: "13", month: "AVR",
+    organizer: "B19",
+    title: "Speed Dating Géant B19 & Ichec Alumni",
+    time: "À confirmer",
+    location: "Domaine de la Bataille de Waterloo",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: "Format speed business dating"
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-04-22",
+    day: "22", month: "AVR",
+    organizer: "B19",
+    title: "Young Talent Awards by Belfius – Bruxelles",
+    time: "À confirmer",
+    location: "Kinepolis Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: "Cérémonie de remise de prix"
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-04-23",
+    day: "23", month: "AVR",
+    organizer: "Entrepreneurs Inspirants · BNI",
+    title: "La Nuit des Entrepreneurs Inspirants – BW & Bruxelles",
+    time: "18h00 – 23h00",
+    location: "La Hagoulle, Brabant Wallon",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://entrepreneurs-inspirants.be/",
+    registerUrl: "https://entrepreneurs-inspirants.be/",
+    notes: "18h Drink · 19h Conférence · 20h30 Walking dinner · 23h Clôture"
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-05-06",
+    day: "06", month: "MAI",
+    organizer: "B19",
+    title: "B19 Diplomatic Nights – Ambassadeur d'Allemagne",
+    time: "À confirmer",
+    location: "Lily's, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: "Format trilingue EN/FR/NL"
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-05-11",
+    day: "11", month: "MAI",
+    organizer: "B19",
+    title: "L'aviation privée avec FLYINGGROUP & DASSAULT AVIATION",
+    time: "À confirmer",
+    location: "Silversquare Bailli, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-05-18",
+    day: "18", month: "MAI",
+    organizer: "B19",
+    title: "Talk – Réussir son projet IA : pourquoi les agents changent la donne !",
+    time: "À confirmer",
+    location: "La Terrasse O2, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-05-21",
+    day: "21", month: "MAI",
+    organizer: "B19",
+    title: "Laurent Hublet, Ministre de l'Économie – Talk B19",
+    time: "À confirmer",
+    location: "42 Belgium – BeCentral, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-05-25",
+    day: "25", month: "MAI",
+    organizer: "B19",
+    title: "Les Schtroumpfs ! La marque belge la plus connue au monde",
+    time: "À confirmer",
+    location: "La Terrasse O2, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-06-01",
+    day: "01", month: "JUN",
+    organizer: "B19",
+    title: "Une vision mondiale, un regard urbain",
+    time: "À confirmer",
+    location: "La Terrasse O2, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-06-16",
+    day: "16", month: "JUN",
+    organizer: "B19",
+    title: "Entreprendre n'a jamais été aussi accessible",
+    time: "À confirmer",
+    location: "La Terrasse O2, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-06-29",
+    day: "29", month: "JUN",
+    organizer: "B19",
+    title: "Business Speed Dating",
+    time: "À confirmer",
+    location: "La Terrasse O2, Bruxelles",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: "Format speed business dating"
+  },
+
+  // ── BECI Bruxelles ──
+  {
+    region: "Bruxelles",
+    date: "2026-04-09",
+    day: "09", month: "AVR",
+    organizer: "BECI",
+    title: "Good Morning 500 – Networking matinal d'entreprises bruxelloises",
+    time: "Matin",
+    location: "Bruxelles",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://www.beci.be/en/event",
+    registerUrl: "https://www.beci.be/en/event",
+    notes: "Rendez-vous mensuel des entrepreneurs bruxellois"
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-04-14",
+    day: "14", month: "AVR",
+    organizer: "BECI",
+    title: "ESG For All – Communiquer sur vos engagements RSE",
+    time: "À confirmer",
+    location: "Bruxelles",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://www.beci.be/en/event",
+    registerUrl: "https://www.beci.be/en/event",
+    notes: ""
+  },
+  {
+    region: "Bruxelles",
+    date: "2026-04-16",
+    day: "16", month: "AVR",
+    organizer: "BECI",
+    title: "Good Morning 500 – Networking matinal",
+    time: "Matin",
+    location: "Bruxelles",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://www.beci.be/en/event",
+    registerUrl: "https://www.beci.be/en/event",
+    notes: "Rendez-vous mensuel des entrepreneurs bruxellois"
+  },
+  // ── La Bulle Networking Bruxelles ──
+  {
+    region: "Bruxelles",
+    date: "2026-04-09",
+    day: "09", month: "AVR",
+    organizer: "La Bulle Networking",
+    title: "Afterwork Networking La Bulle – Berchem-Sainte-Agathe",
+    time: "18h00 – 22h00",
+    location: "Av. de Selliers de Moranville 68, 1082 Berchem-Sainte-Agathe",
+    price: "Gratuit",
+    priceType: "free",
+    infoUrl: "https://labulle-networking.pro/evenement/afterwork-networking-la-bulle-bruxelles-a-berchem-sainte-agathe/",
+    registerUrl: "https://labulle-networking.pro/evenement/afterwork-networking-la-bulle-bruxelles-a-berchem-sainte-agathe/",
+    notes: "Afterwork mensuel du cercle Bruxelles"
+  },
+
+  // ═══════════════════════════════════
+  // HAINAUT
+  // ═══════════════════════════════════
+  // ── La Bulle Networking Hainaut ──
+  {
+    region: "Hainaut",
+    date: "2026-04-23",
+    day: "23", month: "AVR",
+    organizer: "La Bulle Networking",
+    title: "Afterwork au Workall Business Center – La Louvière",
+    time: "19h00 – 21h30",
+    location: "Workall Business Center, 128 Chaussée de Redemont, 7100 La Louvière",
+    price: "35 €",
+    priceType: "paid",
+    infoUrl: "https://labulle-networking.pro/evenement/afterwork-au-workall-business-center-a-la-louviere-23-avril-2026/",
+    registerUrl: "https://labulle-networking.pro/evenement/afterwork-au-workall-business-center-a-la-louviere-23-avril-2026/",
+    notes: "Networking en soirée au Business Center"
+  },
+  {
+    region: "Hainaut",
+    date: "2026-05-21",
+    day: "21", month: "MAI",
+    organizer: "La Bulle Networking",
+    title: "Afterwork au Workall Business Center – La Louvière",
+    time: "19h00 – 21h30",
+    location: "Workall Business Center, 128 Chaussée de Redemont, 7100 La Louvière",
+    price: "35 €",
+    priceType: "paid",
+    infoUrl: "https://labulle-networking.pro/evenements/",
+    registerUrl: "https://labulle-networking.pro/evenements/",
+    notes: "Networking en soirée"
+  },
+  {
+    region: "Hainaut",
+    date: "2026-06-18",
+    day: "18", month: "JUN",
+    organizer: "La Bulle Networking",
+    title: "Afterwork au Workall Business Center – La Louvière",
+    time: "19h00 – 21h30",
+    location: "Workall Business Center, 128 Chaussée de Redemont, 7100 La Louvière",
+    price: "35 €",
+    priceType: "paid",
+    infoUrl: "https://labulle-networking.pro/evenements/",
+    registerUrl: "https://labulle-networking.pro/evenements/",
+    notes: ""
+  },
+  // ── Charleroi Entreprendre ──
+  {
+    region: "Hainaut",
+    date: "2026-04-15",
+    day: "15", month: "AVR",
+    organizer: "Charleroi Entreprendre",
+    title: "Cycle Marketing #7 – Adoptez l'IA pour booster votre business",
+    time: "17h30",
+    location: "Charleroi Entreprendre, 1 Av. du Général Michel, 6000 Charleroi",
+    price: "Gratuit",
+    priceType: "free",
+    infoUrl: "https://www.eventbrite.be/e/cycle-marketing-7-adoptez-lia-pour-booster-votre-business-tickets-1981933893628",
+    registerUrl: "https://www.eventbrite.be/e/cycle-marketing-7-adoptez-lia-pour-booster-votre-business-tickets-1981933893628",
+    notes: "⚠️ Presque complet !"
+  },
+  {
+    region: "Hainaut",
+    date: "2026-04-21",
+    day: "21", month: "AVR",
+    organizer: "Charleroi Entreprendre",
+    title: "Journée Portes Ouvertes – Rencontrez l'équipe & les entrepreneurs",
+    time: "8h30",
+    location: "Charleroi Entreprendre, 1 Av. du Général Michel, 6000 Charleroi",
+    price: "Gratuit",
+    priceType: "free",
+    infoUrl: "https://www.eventbrite.be/e/journee-portes-ouvertes-chez-charleroi-entreprendre-tickets-1985270020072",
+    registerUrl: "https://www.eventbrite.be/e/journee-portes-ouvertes-chez-charleroi-entreprendre-tickets-1985270020072",
+    notes: "Découvrir l'incubateur et ses ressources"
+  },
+  {
+    region: "Hainaut",
+    date: "2026-04-22",
+    day: "22", month: "AVR",
+    organizer: "Charleroi Entreprendre",
+    title: "Cycle Marketing #8 – Construisez votre site web rapidement grâce à l'IA",
+    time: "17h30",
+    location: "Charleroi Entreprendre, 1 Av. du Général Michel, 6000 Charleroi",
+    price: "Gratuit",
+    priceType: "free",
+    infoUrl: "https://www.eventbrite.be/e/cycle-marketing-8-construisez-votre-site-web-rapidement-grace-a-lia-tickets-1981935859508",
+    registerUrl: "https://www.eventbrite.be/e/cycle-marketing-8-construisez-votre-site-web-rapidement-grace-a-lia-tickets-1981935859508",
+    notes: ""
+  },
+  // ── Cafés Business Tournai ──
+  {
+    region: "Hainaut",
+    date: "2026-04-15",
+    day: "15", month: "AVR",
+    organizer: "Cafés Business Tournai",
+    title: "Café Business – Les Vins Brunin-Guillier",
+    time: "9h00",
+    location: "Les Vins Brunin-Guillier, 77 Grand'Route, 7530 Tournai",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://www.eventbrite.fr/e/billets-les-cafes-business-les-vins-brunin-guillier-1984188068927",
+    registerUrl: "https://www.eventbrite.fr/e/billets-les-cafes-business-les-vins-brunin-guillier-1984188068927",
+    notes: "Networking autour d'un café"
+  },
+  {
+    region: "Hainaut",
+    date: "2026-05-28",
+    day: "28", month: "MAI",
+    organizer: "Afterwork Full Services",
+    title: "Afterwork Full Services – Thuin",
+    time: "17h30",
+    location: "Rue des Fours à Coke, 6530 Thuin",
+    price: "À confirmer",
+    priceType: "paid",
+    infoUrl: "https://www.eventbrite.be/e/afterwork-full-services-tickets-1984755897317",
+    registerUrl: "https://www.eventbrite.be/e/afterwork-full-services-tickets-1984755897317",
+    notes: "Drinks, rencontres et bonne ambiance"
+  },
+  // ── B19 Hainaut (déjà existant, enrichi) ──
+  {
+    region: "Hainaut",
+    date: "2026-05-07",
+    day: "07", month: "MAI",
+    organizer: "B19",
+    title: "Business Speed Dating & Découverte du Golf de Falnuée (Namur/Hainaut)",
+    time: "À confirmer",
+    location: "Golf et Hôtel de Falnuée, Namur/Hainaut",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Hainaut",
+    date: "2026-05-20",
+    day: "20", month: "MAI",
+    organizer: "B19",
+    title: "Quand la performance entrepreneuriale devient un devoir d'humanité",
+    time: "À confirmer",
+    location: "Van der Valk Gosselies",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: ""
+  },
+  {
+    region: "Hainaut",
+    date: "2026-06-17",
+    day: "17", month: "JUN",
+    organizer: "B19",
+    title: "Business Speed Dating Géant Carolo B19",
+    time: "À confirmer",
+    location: "Van der Valk Gosselies",
+    price: "Membres B19",
+    priceType: "members",
+    infoUrl: "https://b19.be/agenda/",
+    registerUrl: "https://b19.be/agenda/",
+    notes: "Format speed business dating"
+  }
+];
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+const regionConfig = {
+  "Brabant Wallon": { cls: "bw", gridId: "grid-bw", badgeId: "badge-bw", countId: "count-bw" },
+  "Bruxelles":      { cls: "bxl", gridId: "grid-bxl", badgeId: "badge-bxl", countId: "count-bxl" },
+  "Hainaut":        { cls: "hai", gridId: "grid-hai", badgeId: "badge-hai", countId: "count-hai" }
+};
+
+function iconSVG(type) {
+  const icons = {
+    time: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
+    location: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`,
+    note: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+  };
+  return icons[type] || '';
+}
+
+function renderCard(ev, cls) {
+  const priceClass = ev.priceType === 'free' ? 'free' : ev.priceType === 'members' ? 'members' : '';
+  const noteHtml = ev.notes ? `<div class="meta-item">${iconSVG('note')}<span>${ev.notes}</span></div>` : '';
+  return `
+    <div class="event-card" data-region="${ev.region}" data-date="${ev.date}">
+      <div class="card-top">
+        <div class="card-date ${cls}-color">
+          <div class="day">${ev.day}</div>
+          <div class="month">${ev.month}</div>
+        </div>
+        <div class="card-info">
+          <div class="card-organizer-row">
+            ${getLogosHtml(ev.organizer)}
+            <span class="card-organizer">${ev.organizer}</span>
+          </div>
+          <div class="card-title">${ev.title}</div>
+          <div class="card-meta">
+            <div class="meta-item">${iconSVG('time')}<span>${ev.time}</span></div>
+            <div class="meta-item">${iconSVG('location')}<span>${ev.location}</span></div>
+            ${noteHtml}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="price-tag ${priceClass}">${ev.price}</span>
+        <a href="${ev.infoUrl}" target="_blank" class="btn btn-info">ℹ️ Infos</a>
+        <a href="${ev.registerUrl}" target="_blank" class="btn btn-register ${cls}">→ S'inscrire</a>
+      </div>
+    </div>`;
+}
+
+function getWeekRange() {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const mon = new Date(now.setDate(diff));
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('fr-BE', { day: 'numeric', month: 'long' });
+  return { mon, sun, label: `Semaine du ${fmt(mon)} au ${fmt(sun)} ${sun.getFullYear()}` };
+}
+
+function isThisWeek(dateStr, mon, sun) {
+  const d = new Date(dateStr);
+  return d >= mon && d <= sun;
+}
+
+function init() {
+  // Sort by date
+  events.sort((a, b) => a.date.localeCompare(b.date));
+
+  // Week range
+  const { mon, sun, label } = getWeekRange();
+  document.getElementById('week-label').textContent = label;
+
+  // Update date
+  document.getElementById('update-date').textContent = new Date().toLocaleDateString('fr-BE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  // This week events
+  const thisWeek = events.filter(e => isThisWeek(e.date, mon, sun));
+  if (thisWeek.length > 0) {
+    const banner = document.getElementById('thisWeekBanner');
+    banner.style.display = 'flex';
+    const names = thisWeek.map(e => `<strong>${e.day}/${e.month.slice(0,3).toLowerCase()}</strong> – ${e.title.split('–')[0].trim()}`).join(' · ');
+    document.getElementById('thisWeekText').innerHTML = names;
+  }
+
+  // Counts
+  const counts = { "Brabant Wallon": 0, "Bruxelles": 0, "Hainaut": 0 };
+  events.forEach(e => counts[e.region]++);
+  document.getElementById('count-bw').textContent = counts["Brabant Wallon"];
+  document.getElementById('count-bxl').textContent = counts["Bruxelles"];
+  document.getElementById('count-hai').textContent = counts["Hainaut"];
+  document.getElementById('count-total').textContent = events.length;
+  document.getElementById('badge-bw').textContent = counts["Brabant Wallon"] + ' événements';
+  document.getElementById('badge-bxl').textContent = counts["Bruxelles"] + ' événements';
+  document.getElementById('badge-hai').textContent = counts["Hainaut"] + ' événements';
+
+  // Render cards
+  Object.entries(regionConfig).forEach(([region, cfg]) => {
+    const grid = document.getElementById(cfg.gridId);
+    const regionEvents = events.filter(e => e.region === region);
+    grid.innerHTML = regionEvents.map(e => renderCard(e, cfg.cls)).join('');
+  });
+}
+
+function filterRegion(region, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const sections = ['bw', 'bxl', 'hai'];
+  const sectionMap = { bw: 'Brabant Wallon', bxl: 'Bruxelles', hai: 'Hainaut' };
+
+  sections.forEach(s => {
+    const secEl = document.getElementById('section-' + s);
+    const gridEl = document.getElementById('grid-' + s);
+    const show = region === 'all' || sectionMap[s] === region;
+    secEl.style.display = show ? 'flex' : 'none';
+    gridEl.style.display = show ? 'grid' : 'none';
+  });
+}
+
+init();
+</script>
+</body>
+</html>
