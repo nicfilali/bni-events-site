@@ -71,19 +71,62 @@
     }
     .week-info .dot { width: 8px; height: 8px; border-radius: 50%; background: #69f0ae; display: inline-block; }
 
+    /* ── Header add-event button (top right) ── */
+    .header-add-btn {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #e53935;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 9px 16px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(229,57,53,0.3);
+      transition: all 0.2s;
+    }
+    .header-add-btn:hover { background: #c62828; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(229,57,53,0.4); }
+    @media (max-width: 600px) {
+      .header-add-btn { position: static; margin: 0 auto 16px; }
+    }
+
     /* ── Filters ── */
     .filters {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 8px;
-      padding: 20px 24px;
+      align-items: stretch;
+      gap: 10px 18px;
+      padding: 16px 24px;
       background: white;
       border-bottom: 1px solid #e8e8f0;
       position: sticky;
       top: 0;
       z-index: 100;
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .filter-group + .filter-group { border-left: 1px solid #e8e8f0; padding-left: 18px; }
+    .filter-group-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #9a9ab0;
+      padding-left: 4px;
+    }
+    .filter-group-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 600px) {
+      .filter-group + .filter-group { border-left: none; padding-left: 0; border-top: 1px solid #e8e8f0; padding-top: 10px; }
     }
     .filter-btn {
       padding: 8px 18px;
@@ -105,6 +148,7 @@
     .filter-btn[data-filter="region:Namur"].active { background: #00838f; border-color: #00838f; }
     .filter-btn[data-filter="nextweek"].active { background: #e53935; border-color: #e53935; }
     .filter-btn[data-filter="bnimember"].active { background: #f9a825; border-color: #f9a825; color: #1a1a2e; }
+    .filter-btn[data-filter="salons"].active { background: #6d4c41; border-color: #6d4c41; }
 
     /* ── Add event button ── */
     .add-event-btn {
@@ -376,21 +420,6 @@
     .btn-register.hai { background: #2e7d32; }
     .btn-register.hai:hover { background: #1b5e20; }
 
-    /* ── This Week Banner ── */
-    .this-week-banner {
-      background: linear-gradient(135deg, #e53935, #c62828);
-      color: white;
-      border-radius: 16px;
-      padding: 18px 22px;
-      margin-bottom: 28px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .this-week-banner .icon { font-size: 28px; flex-shrink: 0; }
-    .this-week-banner h3 { font-size: 16px; font-weight: 800; margin-bottom: 2px; }
-    .this-week-banner p { font-size: 13px; opacity: 0.85; }
-
     /* ── Region colors ── */
     .bw-color { background: #e3f0fd; color: #1565c0; }
     .bxl-color { background: #f3e5f5; color: #6a1b9a; }
@@ -411,7 +440,6 @@
     .count.nam { background: #00838f; }
 
     /* ── Salons ── */
-    .salons-section-header { margin-top: 48px; padding-top: 28px; border-top: 2px dashed #e0e0e0; }
     .salons-intro { color: #555; font-size: 14px; max-width: 780px; margin: 6px 0 18px; line-height: 1.5; }
     .sector-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
     .sector-chip { padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #fff;
@@ -444,6 +472,7 @@
 
 <!-- HEADER -->
 <header>
+  <a href="ajouter-evenement.html" class="header-add-btn">➕ Ajouter un événement</a>
   <div class="header-badge">📅 Agenda Networking</div>
   <h1>Agenda des événements <span>Networking</span></h1>
   <p class="subtitle">Brabant Wallon · Bruxelles · Hainaut · Liège · Namur — mis à jour chaque semaine pour votre club BNI</p>
@@ -467,28 +496,29 @@
 
 <!-- FILTERS -->
 <div class="filters">
-  <button class="filter-btn active" data-filter="all" onclick="applyFilter('all', this)">🗺️ Toutes les régions</button>
-  <button class="filter-btn" data-filter="nextweek" onclick="applyFilter('nextweek', this)">📆 Semaine prochaine</button>
-  <button class="filter-btn" data-filter="bnimember" onclick="applyFilter('bnimember', this)">⭐ Membres BNI</button>
-  <button class="filter-btn" data-filter="region:Brabant Wallon" onclick="applyFilter('region:Brabant Wallon', this)">🔵 Brabant Wallon</button>
-  <button class="filter-btn" data-filter="region:Bruxelles" onclick="applyFilter('region:Bruxelles', this)">🟣 Bruxelles</button>
-  <button class="filter-btn" data-filter="region:Hainaut" onclick="applyFilter('region:Hainaut', this)">🟢 Hainaut</button>
-  <button class="filter-btn" data-filter="region:Liège" onclick="applyFilter('region:Liège', this)">🟠 Liège</button>
-  <button class="filter-btn" data-filter="region:Namur" onclick="applyFilter('region:Namur', this)">🟦 Namur</button>
-  <a href="ajouter-evenement.html" class="filter-btn add-event-btn">➕ Ajouter un événement</a>
+  <div class="filter-group">
+    <span class="filter-group-label">Par région</span>
+    <div class="filter-group-btns">
+      <button class="filter-btn active" data-filter="all" onclick="applyFilter('all', this)">🗺️ Toutes</button>
+      <button class="filter-btn" data-filter="region:Brabant Wallon" onclick="applyFilter('region:Brabant Wallon', this)">🔵 Brabant Wallon</button>
+      <button class="filter-btn" data-filter="region:Bruxelles" onclick="applyFilter('region:Bruxelles', this)">🟣 Bruxelles</button>
+      <button class="filter-btn" data-filter="region:Hainaut" onclick="applyFilter('region:Hainaut', this)">🟢 Hainaut</button>
+      <button class="filter-btn" data-filter="region:Liège" onclick="applyFilter('region:Liège', this)">🟠 Liège</button>
+      <button class="filter-btn" data-filter="region:Namur" onclick="applyFilter('region:Namur', this)">🟦 Namur</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <span class="filter-group-label">Par type</span>
+    <div class="filter-group-btns">
+      <button class="filter-btn" data-filter="nextweek" onclick="applyFilter('nextweek', this)">📆 Semaine prochaine</button>
+      <button class="filter-btn" data-filter="bnimember" onclick="applyFilter('bnimember', this)">⭐ Membres BNI</button>
+      <button class="filter-btn" data-filter="salons" onclick="applyFilter('salons', this)">🎪 Salons</button>
+    </div>
+  </div>
 </div>
 
 <!-- MAIN -->
 <main>
-
-  <!-- THIS WEEK BANNER -->
-  <div class="this-week-banner" id="thisWeekBanner" style="display:none">
-    <div class="icon">🔥</div>
-    <div>
-      <h3>Cette semaine</h3>
-      <p id="thisWeekText">Des événements ont lieu cette semaine !</p>
-    </div>
-  </div>
 
   <!-- BRABANT WALLON -->
   <div class="section-header" id="section-bw" data-section="Brabant Wallon">
@@ -530,15 +560,17 @@
   </div>
   <div class="events-grid" id="grid-nam"></div>
 
-  <!-- ════════ SALONS PROFESSIONNELS ════════ -->
-  <div class="section-header salons-section-header" id="section-salons">
-    <div class="region-dot" style="background:#6d4c41"></div>
-    <h2>🎪 Salons professionnels</h2>
-    <span class="count" id="badge-salons" style="background:#6d4c41">0</span>
+  <!-- ════════ SALONS PROFESSIONNELS (vue dédiée, togglée via "Par type") ════════ -->
+  <div id="salons-view" style="display:none">
+    <div class="section-header" id="section-salons">
+      <div class="region-dot" style="background:#6d4c41"></div>
+      <h2>🎪 Salons professionnels</h2>
+      <span class="count" id="badge-salons" style="background:#6d4c41">0</span>
+    </div>
+    <p class="salons-intro">Les grands salons métiers à venir (Belgique &amp; frontaliers, 12 prochains mois) — pour tous les secteurs représentés au Club BNI : bâtiment, immobilier, industrie, communication, santé, HoReCa, automobile et plus.</p>
+    <div class="sector-filters" id="sector-filters"></div>
+    <div class="events-grid" id="grid-salons"></div>
   </div>
-  <p class="salons-intro">Les grands salons métiers à venir (Belgique &amp; frontaliers, 12 prochains mois) — pour tous les secteurs représentés au Club BNI : bâtiment, immobilier, industrie, communication, santé, HoReCa, automobile et plus.</p>
-  <div class="sector-filters" id="sector-filters"></div>
-  <div class="events-grid" id="grid-salons"></div>
 
 </main>
 
@@ -1389,15 +1421,6 @@ function init() {
   // Update date
   document.getElementById('update-date').textContent = new Date().toLocaleDateString('fr-BE', { day: 'numeric', month: 'long', year: 'numeric' });
 
-  // This week events
-  const thisWeek = events.filter(e => isThisWeek(e.date, mon, sun));
-  if (thisWeek.length > 0) {
-    const banner = document.getElementById('thisWeekBanner');
-    banner.style.display = 'flex';
-    const names = thisWeek.map(e => `<strong>${e.day}/${e.month.slice(0,3).toLowerCase()}</strong> – ${e.title.split('–')[0].trim()}`).join(' · ');
-    document.getElementById('thisWeekText').innerHTML = names;
-  }
-
   // Counts
   const counts = { "Brabant Wallon": 0, "Bruxelles": 0, "Hainaut": 0, "Liège": 0, "Namur": 0 };
   events.forEach(e => { if (counts[e.region] !== undefined) counts[e.region]++; });
@@ -1431,6 +1454,21 @@ function applyFilter(filter, btn) {
 
   const sections = ['bw', 'bxl', 'hai', 'lg', 'nam'];
   const sectionMap = { bw: 'Brabant Wallon', bxl: 'Bruxelles', hai: 'Hainaut', lg: 'Liège', nam: 'Namur' };
+  const salonsView = document.getElementById('salons-view');
+
+  // ── Vue "Salons" : on masque toutes les régions et on affiche la vue salons ──
+  if (filter === 'salons') {
+    sections.forEach(s => {
+      document.getElementById('section-' + s).style.display = 'none';
+      document.getElementById('grid-' + s).style.display = 'none';
+    });
+    const ge = document.getElementById('globalEmpty');
+    if (ge) ge.remove();
+    salonsView.style.display = 'block';
+    return;
+  }
+  // Toute autre vue : on cache les salons
+  salonsView.style.display = 'none';
 
   // Determine region visibility + card-level filter
   let regionFilter = null;  // null = all regions
