@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agenda des événements Networking | Brabant Wallon · Bruxelles · Hainaut</title>
+  <title>Agenda des événements Networking | Brabant Wallon · Bruxelles · Hainaut · Liège · Namur</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="alternate icon" href="favicon.svg">
   <meta name="theme-color" content="#1a1a2e">
@@ -101,6 +101,8 @@
     .filter-btn[data-filter="region:Brabant Wallon"].active { background: #1565c0; border-color: #1565c0; }
     .filter-btn[data-filter="region:Bruxelles"].active { background: #6a1b9a; border-color: #6a1b9a; }
     .filter-btn[data-filter="region:Hainaut"].active { background: #2e7d32; border-color: #2e7d32; }
+    .filter-btn[data-filter="region:Liège"].active { background: #d84315; border-color: #d84315; }
+    .filter-btn[data-filter="region:Namur"].active { background: #00838f; border-color: #00838f; }
     .filter-btn[data-filter="nextweek"].active { background: #e53935; border-color: #e53935; }
     .filter-btn[data-filter="bnimember"].active { background: #f9a825; border-color: #f9a825; color: #1a1a2e; }
 
@@ -187,6 +189,8 @@
     .stat-num.bw { color: #1565c0; }
     .stat-num.bxl { color: #6a1b9a; }
     .stat-num.hai { color: #2e7d32; }
+    .stat-num.lg { color: #d84315; }
+    .stat-num.nam { color: #00838f; }
 
     /* ── Main Layout ── */
     main { max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; }
@@ -391,14 +395,32 @@
     .bw-color { background: #e3f0fd; color: #1565c0; }
     .bxl-color { background: #f3e5f5; color: #6a1b9a; }
     .hai-color { background: #e8f5e9; color: #2e7d32; }
+    .lg-color { background: #fbe9e7; color: #d84315; }
+    .nam-color { background: #e0f2f1; color: #00838f; }
 
     .region-dot.bw { background: #1565c0; }
     .region-dot.bxl { background: #6a1b9a; }
     .region-dot.hai { background: #2e7d32; }
+    .region-dot.lg { background: #d84315; }
+    .region-dot.nam { background: #00838f; }
 
     .count.bw { background: #1565c0; }
     .count.bxl { background: #6a1b9a; }
     .count.hai { background: #2e7d32; }
+    .count.lg { background: #d84315; }
+    .count.nam { background: #00838f; }
+
+    /* ── Salons ── */
+    .salons-section-header { margin-top: 48px; padding-top: 28px; border-top: 2px dashed #e0e0e0; }
+    .salons-intro { color: #555; font-size: 14px; max-width: 780px; margin: 6px 0 18px; line-height: 1.5; }
+    .sector-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+    .sector-chip { padding: 7px 14px; border-radius: 20px; border: 1px solid #ddd; background: #fff;
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #444; }
+    .sector-chip:hover { border-color: #1a1a2e; color: #1a1a2e; }
+    .sector-chip.active { color: #fff; border-color: transparent; }
+    .sector-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px;
+      font-weight: 700; color: #fff; letter-spacing: 0.2px; }
+    .salon-card.hidden { display: none; }
 
     /* ── Footer ── */
     footer {
@@ -424,7 +446,7 @@
 <header>
   <div class="header-badge">📅 Agenda Networking</div>
   <h1>Agenda des événements <span>Networking</span></h1>
-  <p class="subtitle">Brabant Wallon · Bruxelles · Hainaut — mis à jour chaque semaine pour votre club BNI</p>
+  <p class="subtitle">Brabant Wallon · Bruxelles · Hainaut · Liège · Namur — mis à jour chaque semaine pour votre club BNI</p>
   <div style="display:flex; justify-content:center; align-items:center; gap:12px; flex-wrap:wrap;">
     <div class="week-info">
       <span class="dot"></span>
@@ -438,6 +460,8 @@
   <div class="stat"><div class="stat-num bw" id="count-bw">–</div><div class="stat-label">Brabant Wallon</div></div>
   <div class="stat"><div class="stat-num bxl" id="count-bxl">–</div><div class="stat-label">Bruxelles</div></div>
   <div class="stat"><div class="stat-num hai" id="count-hai">–</div><div class="stat-label">Hainaut</div></div>
+  <div class="stat"><div class="stat-num lg" id="count-lg">–</div><div class="stat-label">Liège</div></div>
+  <div class="stat"><div class="stat-num nam" id="count-nam">–</div><div class="stat-label">Namur</div></div>
   <div class="stat"><div class="stat-num" id="count-total">–</div><div class="stat-label">Total événements</div></div>
 </div>
 
@@ -449,6 +473,8 @@
   <button class="filter-btn" data-filter="region:Brabant Wallon" onclick="applyFilter('region:Brabant Wallon', this)">🔵 Brabant Wallon</button>
   <button class="filter-btn" data-filter="region:Bruxelles" onclick="applyFilter('region:Bruxelles', this)">🟣 Bruxelles</button>
   <button class="filter-btn" data-filter="region:Hainaut" onclick="applyFilter('region:Hainaut', this)">🟢 Hainaut</button>
+  <button class="filter-btn" data-filter="region:Liège" onclick="applyFilter('region:Liège', this)">🟠 Liège</button>
+  <button class="filter-btn" data-filter="region:Namur" onclick="applyFilter('region:Namur', this)">🟦 Namur</button>
   <a href="ajouter-evenement.html" class="filter-btn add-event-btn">➕ Ajouter un événement</a>
 </div>
 
@@ -488,11 +514,37 @@
   </div>
   <div class="events-grid" id="grid-hai"></div>
 
+  <!-- LIÈGE -->
+  <div class="section-header" id="section-lg" data-section="Liège">
+    <div class="region-dot lg"></div>
+    <h2>Liège</h2>
+    <span class="count lg" id="badge-lg">0</span>
+  </div>
+  <div class="events-grid" id="grid-lg"></div>
+
+  <!-- NAMUR -->
+  <div class="section-header" id="section-nam" data-section="Namur">
+    <div class="region-dot nam"></div>
+    <h2>Namur</h2>
+    <span class="count nam" id="badge-nam">0</span>
+  </div>
+  <div class="events-grid" id="grid-nam"></div>
+
+  <!-- ════════ SALONS PROFESSIONNELS ════════ -->
+  <div class="section-header salons-section-header" id="section-salons">
+    <div class="region-dot" style="background:#6d4c41"></div>
+    <h2>🎪 Salons professionnels</h2>
+    <span class="count" id="badge-salons" style="background:#6d4c41">0</span>
+  </div>
+  <p class="salons-intro">Les grands salons métiers à venir (Belgique &amp; frontaliers, 12 prochains mois) — pour tous les secteurs représentés au Club BNI : bâtiment, immobilier, industrie, communication, santé, HoReCa, automobile et plus.</p>
+  <div class="sector-filters" id="sector-filters"></div>
+  <div class="events-grid" id="grid-salons"></div>
+
 </main>
 
 <footer>
   <p>Présenté chaque jeudi au <strong>Club BNI</strong> · Mis à jour le <span id="update-date"></span></p>
-  <p style="margin-top:6px">Sources : Made In Local · BNI Belgique · Cercle du Lion · B19 · Paprika Events · Alliance Centre BW · Entrepreneurs Inspirants</p>
+  <p style="margin-top:6px">Sources : Made In Local · BNI Belgique · Cercle du Lion · B19 · Paprika Events · Alliance Centre BW · Entrepreneurs Inspirants · La Bulle Networking · Square by New · Cercle de Wallonie</p>
 </footer>
 
 <script>
@@ -513,6 +565,7 @@ const logos = {
   "Cercle de Wallonie":     "https://logo.clearbit.com/cercledewallonie.com",
   "TuBusiness":             "https://logo.clearbit.com/tubusiness.be",
   "La Bulle Networking":    "https://logo.clearbit.com/labulle-networking.pro",
+  "Square by New":          "https://logo.clearbit.com/squarebynew.be",
   "BECI":                   "https://logo.clearbit.com/beci.be",
   "Cercle du Lac":          "https://logo.clearbit.com/cercledulac.be",
   "Charleroi Entreprendre": "https://logo.clearbit.com/charleroientreprendre.be",
@@ -978,6 +1031,126 @@ const events = [
     notes: "Lancement du 3ème numéro du magazine B17 Le Club"
   },
   // __NEW_EVENTS_INSERT__
+
+  // ═══════════════════════════════════
+  // AJOUTS — Rééquilibrage des sources (juin 2026)
+  // ═══════════════════════════════════
+  // ── Brabant Wallon ──
+  {
+    region: "Brabant Wallon",
+    date: "2026-06-25",
+    day: "25", month: "JUN",
+    organizer: "Made In Local · UCM",
+    title: "Plaisirs d'été",
+    time: "À confirmer",
+    location: "Braine-l'Alleud",
+    price: "Sur inscription",
+    priceType: "",
+    infoUrl: "https://www.madeinlocal.be/event/25-06-plaisirs-d-ete-64/register",
+    registerUrl: "https://www.madeinlocal.be/event/25-06-plaisirs-d-ete-64/register",
+    notes: "Networking estival UCM BW × Made In Local"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-07-05",
+    day: "05", month: "JUL",
+    organizer: "Made In Local",
+    title: "BW Classic + BW Woman Race en VIP",
+    time: "À confirmer",
+    location: "Orp-Jauche",
+    price: "Sur inscription",
+    priceType: "",
+    infoUrl: "https://www.madeinlocal.be/event/bw-classic-bw-woman-race-en-vip-70/register",
+    registerUrl: "https://www.madeinlocal.be/event/bw-classic-bw-woman-race-en-vip-70/register",
+    notes: "Networking en VIP autour de la course"
+  },
+  {
+    region: "Brabant Wallon",
+    date: "2026-07-31",
+    day: "31", month: "JUL",
+    organizer: "La Bulle Networking",
+    title: "Interbulle de l'Été à Nivelles",
+    time: "19h00 – 22h00",
+    location: "Chau. de Mons 22, 1400 Nivelles",
+    price: "50€",
+    priceType: "",
+    infoUrl: "https://labulle-networking.pro/evenement/interbulle-de-lete-a-nivelles-31-juillet-2026/",
+    registerUrl: "https://labulle-networking.pro/evenement/interbulle-de-lete-a-nivelles-31-juillet-2026/",
+    notes: "Grand afterwork inter-bulles estival"
+  },
+  // ── Bruxelles ──
+  {
+    region: "Bruxelles",
+    date: "2026-06-30",
+    day: "30", month: "JUN",
+    organizer: "La Bulle Networking",
+    title: "Afterwork networking La Bulle Bruxelles",
+    time: "18h00 – 22h00",
+    location: "Av. de Selliers de Moranville 68, Berchem-Sainte-Agathe",
+    price: "Gratuit",
+    priceType: "free",
+    infoUrl: "https://labulle-networking.pro/evenement/afterwork-networking-la-bulle-bruxelles-a-berchem-sainte-agathe-30-juin-2026/",
+    registerUrl: "https://labulle-networking.pro/evenement/afterwork-networking-la-bulle-bruxelles-a-berchem-sainte-agathe-30-juin-2026/",
+    notes: "Afterwork gratuit, ouvert aux visiteurs"
+  },
+  // ── Liège ──
+  {
+    region: "Liège",
+    date: "2026-06-24",
+    day: "24", month: "JUN",
+    organizer: "Entrepreneurs Inspirants",
+    title: "Parlons solutions",
+    time: "À confirmer",
+    location: "Liège",
+    price: "Sur inscription",
+    priceType: "",
+    infoUrl: "https://entrepreneurs-inspirants.be/evenement/Li%C3%A8ge/Parlons%20solutions",
+    registerUrl: "https://entrepreneurs-inspirants.be/evenement/Li%C3%A8ge/Parlons%20solutions",
+    notes: "Soirée networking + conférences"
+  },
+  // ── Namur ──
+  {
+    region: "Namur",
+    date: "2026-06-22",
+    day: "22", month: "JUN",
+    organizer: "Entrepreneurs Inspirants",
+    title: "Les Décideurs : Les rencontres du SoirEco",
+    time: "À confirmer",
+    location: "Château de la Vecquée, Namur",
+    price: "Sur inscription",
+    priceType: "",
+    infoUrl: "https://entrepreneurs-inspirants.be/evenement/Namur/Les%20D%C3%A9cideurs%20%3A%20Les%20rencontres%20du%20SoirEco",
+    registerUrl: "https://entrepreneurs-inspirants.be/evenement/Namur/Les%20D%C3%A9cideurs%20%3A%20Les%20rencontres%20du%20SoirEco",
+    notes: "Rencontre décideurs économiques & politiques"
+  },
+  {
+    region: "Namur",
+    date: "2026-06-23",
+    day: "23", month: "JUN",
+    organizer: "La Bulle Networking",
+    title: "Interbulle à Namur",
+    time: "18h30 – 22h00",
+    location: "Rue du Collège 49, 5000 Namur",
+    price: "35€",
+    priceType: "",
+    infoUrl: "https://labulle-networking.pro/evenement/interbulle-la-bulle-namur/",
+    registerUrl: "https://labulle-networking.pro/evenement/interbulle-la-bulle-namur/",
+    notes: "Afterwork inter-bulles"
+  },
+  {
+    region: "Namur",
+    date: "2026-06-30",
+    day: "30", month: "JUN",
+    organizer: "Square by New",
+    title: "Square by NEW au Château de Beez",
+    time: "À confirmer",
+    location: "Château de Beez, Namur",
+    price: "35€ membres / 50€ non-membres",
+    priceType: "",
+    infoUrl: "https://entrepreneurs-inspirants.be/evenement/Namur/Square%20by%20NEW%20au%20Ch%C3%A2teau%20de%20Beez",
+    registerUrl: "https://entrepreneurs-inspirants.be/evenement/Namur/Square%20by%20NEW%20au%20Ch%C3%A2teau%20de%20Beez",
+    notes: "Soirée de réseautage entrepreneurs namurois"
+  },
 ];
 
 // ─────────────────────────────────────────────
@@ -986,8 +1159,147 @@ const events = [
 const regionConfig = {
   "Brabant Wallon": { cls: "bw", gridId: "grid-bw", badgeId: "badge-bw", countId: "count-bw" },
   "Bruxelles":      { cls: "bxl", gridId: "grid-bxl", badgeId: "badge-bxl", countId: "count-bxl" },
-  "Hainaut":        { cls: "hai", gridId: "grid-hai", badgeId: "badge-hai", countId: "count-hai" }
+  "Hainaut":        { cls: "hai", gridId: "grid-hai", badgeId: "badge-hai", countId: "count-hai" },
+  "Liège":          { cls: "lg", gridId: "grid-lg", badgeId: "badge-lg", countId: "count-lg" },
+  "Namur":          { cls: "nam", gridId: "grid-nam", badgeId: "badge-nam", countId: "count-nam" }
 };
+
+// ─────────────────────────────────────────────
+// SALONS PROFESSIONNELS — par secteur (métiers BNI)
+// Éditer ici pour mettre à jour les salons.
+// ─────────────────────────────────────────────
+const sectorColors = {
+  "Bâtiment & Immobilier":            "#6d4c41",
+  "Industrie, Transport & Logistique":"#455a64",
+  "Communication, Digital & Tech":    "#3949ab",
+  "HoReCa & Alimentaire":             "#e65100",
+  "Santé & Bien-être":                "#ad1457",
+  "Entrepreneuriat & Formation":      "#00695c",
+  "Automobile & Mobilité":            "#c62828",
+  "Mode & Retail":                    "#8e24aa"
+};
+
+const salons = [
+  // ── Bâtiment & Immobilier ──
+  { sector: "Bâtiment & Immobilier", date: "2026-10-10", day: "10", month: "OCT", dateLabel: "10 → 18 octobre 2026",
+    title: "Batireno / Énergie & Habitat", venue: "Namur Expo", location: "Namur",
+    url: "https://www.batireno.be/", note: "Salon wallon de la construction et rénovation" },
+  { sector: "Bâtiment & Immobilier", date: "2026-10-10", day: "10", month: "OCT", dateLabel: "10 → 18 octobre 2026",
+    title: "BIS – Bouw- & Interieursalon", venue: "Flanders Expo", location: "Gand",
+    url: "https://www.bis.be/", note: "Construction, rénovation & aménagement intérieur" },
+  { sector: "Bâtiment & Immobilier", date: "2027-02-12", day: "12", month: "FÉV", dateLabel: "12 → 21 février 2027",
+    title: "Batibouw", venue: "Brussels Expo", location: "Bruxelles",
+    url: "https://www.batibouw.com/", note: "LE grand salon de la construction et de la rénovation" },
+  { sector: "Bâtiment & Immobilier", date: "2027-03-11", day: "11", month: "MAR", dateLabel: "11 → 12 mars 2027",
+    title: "Futurebuild Belgium (Realty)", venue: "Brussels Expo", location: "Bruxelles",
+    url: "https://www.futurebuildbelgium.be/", note: "Sommet de l'immobilier et de la construction durable" },
+  { sector: "Bâtiment & Immobilier", date: "2027-03-26", day: "26", month: "MAR", dateLabel: "26 → 29 mars 2027",
+    title: "Salon Bois & Habitat", venue: "Namur Expo", location: "Namur",
+    url: "https://www.bois-habitat.be/", note: "Construire et rénover de façon responsable" },
+  // ── Industrie, Transport & Logistique ──
+  { sector: "Industrie, Transport & Logistique", date: "2026-09-22", day: "22", month: "SEP", dateLabel: "22 → 23 septembre 2026",
+    title: "Empack Gand", venue: "Flanders Expo", location: "Gand",
+    url: "https://www.empack.be/", note: "Solutions d'emballage innovantes" },
+  { sector: "Industrie, Transport & Logistique", date: "2026-09-22", day: "22", month: "SEP", dateLabel: "22 → 23 septembre 2026",
+    title: "Transport & Logistiek", venue: "Flanders Expo", location: "Gand",
+    url: "https://www.transport-logistiek.be/", note: "Salon du transport et de la logistique" },
+  { sector: "Industrie, Transport & Logistique", date: "2026-09-22", day: "22", month: "SEP", dateLabel: "22 → 23 septembre 2026",
+    title: "Logistic & Industrial Build", venue: "Flanders Expo", location: "Gand",
+    url: "https://www.eventseye.com/fairs/f-logistic-industrial-build-belgium-31837-1.html", note: "Immobilier logistique & industriel" },
+  // ── HoReCa & Alimentaire ──
+  { sector: "HoReCa & Alimentaire", date: "2026-06-25", day: "25", month: "JUN", dateLabel: "25 → 27 juin 2026",
+    title: "World of Coffee Europe", venue: "Brussels Expo", location: "Bruxelles",
+    url: "https://worldofcoffee.org/", note: "Rendez-vous des professionnels du café" },
+  { sector: "HoReCa & Alimentaire", date: "2026-09-30", day: "30", month: "SEP", dateLabel: "30 sept → 1 octobre 2026",
+    title: "Intrafood", venue: "Kortrijk Xpo", location: "Courtrai",
+    url: "https://www.intrafood.be/", note: "Industrie alimentaire Benelux" },
+  { sector: "HoReCa & Alimentaire", date: "2026-11-15", day: "15", month: "NOV", dateLabel: "15 → 18 novembre 2026",
+    title: "Horeca Expo", venue: "Flanders Expo", location: "Gand",
+    url: "https://www.horecaexpo.be/", note: "Le plus grand salon HoReCa de Belgique" },
+  // ── Santé & Bien-être ──
+  { sector: "Santé & Bien-être", date: "2026-10-01", day: "01", month: "OCT", dateLabel: "1 → 3 octobre 2026",
+    title: "Dentex", venue: "Brussels Expo", location: "Bruxelles",
+    url: "https://www.dentex.be/", note: "Salon dentaire & innovations" },
+  { sector: "Santé & Bien-être", date: "2026-10-10", day: "10", month: "OCT", dateLabel: "10 → 12 octobre 2026",
+    title: "Estetika", venue: "Brussels Expo", location: "Bruxelles",
+    url: "https://www.estetika.be/", note: "Rendez-vous du secteur beauté au Benelux" },
+  // ── Entrepreneuriat & Formation ──
+  { sector: "Entrepreneuriat & Formation", date: "2026-07-24", day: "24", month: "JUL", dateLabel: "24 → 27 juillet 2026",
+    title: "Foire de Libramont", venue: "Libramont (LEC)", location: "Libramont",
+    url: "https://www.foiredelibramont.com/", note: "Vitrine du monde rural, agro & industrie" },
+  { sector: "Entrepreneuriat & Formation", date: "2026-10-07", day: "07", month: "OCT", dateLabel: "7 → 10 octobre 2026",
+    title: "Salon Éduc", venue: "Wallonie Expo (WEX)", location: "Marche-en-Famenne",
+    url: "https://www.saloneduc.be/", note: "Plateforme de l'éducation et de la formation" },
+  // ── Automobile & Mobilité ──
+  { sector: "Automobile & Mobilité", date: "2027-01-09", day: "09", month: "JAN", dateLabel: "9 → 18 janvier 2027",
+    title: "Brussels Motor Show (Autosalon)", venue: "Brussels Expo", location: "Bruxelles",
+    url: "https://autosalon.be/", note: "Le plus grand événement auto d'Europe" },
+  // ── Mode & Retail (frontalier) ──
+  { sector: "Mode & Retail", date: "2026-09-05", day: "05", month: "SEP", dateLabel: "5 → 7 septembre 2026",
+    title: "Who's Next / Premiere Classe", venue: "Paris Porte de Versailles", location: "Paris (frontalier)",
+    url: "https://wsn-events.com/en/events", note: "Salon international mode & accessoires" }
+];
+
+function renderSalonCard(s) {
+  const color = sectorColors[s.sector] || "#555";
+  const noteHtml = s.note ? `<div class="meta-item">${iconSVG('note')}<span>${s.note}</span></div>` : '';
+  return `
+    <div class="event-card salon-card" data-sector="${s.sector}">
+      <div class="card-top">
+        <div class="card-date" style="background:${color}1a;color:${color}">
+          <div class="day">${s.day}</div>
+          <div class="month">${s.month}</div>
+        </div>
+        <div class="card-info">
+          <div class="card-organizer-row">
+            <span class="sector-badge" style="background:${color}">${s.sector}</span>
+          </div>
+          <div class="card-title">${s.title}</div>
+          <div class="card-meta">
+            <div class="meta-item">${iconSVG('time')}<span>${s.dateLabel}</span></div>
+            <div class="meta-item">${iconSVG('location')}<span>${s.venue} · ${s.location}</span></div>
+            ${noteHtml}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <a href="${s.url}" target="_blank" class="btn btn-register" style="background:${color}">→ Site officiel</a>
+      </div>
+    </div>`;
+}
+
+function renderSalons() {
+  const grid = document.getElementById('grid-salons');
+  if (!grid) return;
+  const sorted = [...salons].sort((a, b) => a.date.localeCompare(b.date));
+  grid.innerHTML = sorted.map(renderSalonCard).join('');
+  document.getElementById('badge-salons').textContent = salons.length + ' salons';
+
+  // Build sector filter chips
+  const sectors = [...new Set(salons.map(s => s.sector))];
+  const wrap = document.getElementById('sector-filters');
+  let chips = `<button class="sector-chip active" data-sector="all" style="background:#1a1a2e;color:#fff" onclick="filterSalons('all', this)">Tous les secteurs</button>`;
+  chips += sectors.map(sec => {
+    const c = sectorColors[sec] || "#555";
+    return `<button class="sector-chip" data-sector="${sec}" data-color="${c}" onclick="filterSalons('${sec.replace(/'/g, "\\'")}', this)">${sec}</button>`;
+  }).join('');
+  wrap.innerHTML = chips;
+}
+
+function filterSalons(sector, btn) {
+  document.querySelectorAll('.sector-chip').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = '';
+    b.style.color = '';
+  });
+  btn.classList.add('active');
+  btn.style.background = sector === 'all' ? '#1a1a2e' : (btn.dataset.color || '#1a1a2e');
+  btn.style.color = '#fff';
+  document.querySelectorAll('#grid-salons .salon-card').forEach(card => {
+    const match = sector === 'all' || card.dataset.sector === sector;
+    card.classList.toggle('hidden', !match);
+  });
+}
 
 function iconSVG(type) {
   const icons = {
@@ -1087,15 +1399,19 @@ function init() {
   }
 
   // Counts
-  const counts = { "Brabant Wallon": 0, "Bruxelles": 0, "Hainaut": 0 };
-  events.forEach(e => counts[e.region]++);
+  const counts = { "Brabant Wallon": 0, "Bruxelles": 0, "Hainaut": 0, "Liège": 0, "Namur": 0 };
+  events.forEach(e => { if (counts[e.region] !== undefined) counts[e.region]++; });
   document.getElementById('count-bw').textContent = counts["Brabant Wallon"];
   document.getElementById('count-bxl').textContent = counts["Bruxelles"];
   document.getElementById('count-hai').textContent = counts["Hainaut"];
+  document.getElementById('count-lg').textContent = counts["Liège"];
+  document.getElementById('count-nam').textContent = counts["Namur"];
   document.getElementById('count-total').textContent = events.length;
   document.getElementById('badge-bw').textContent = counts["Brabant Wallon"] + ' événements';
   document.getElementById('badge-bxl').textContent = counts["Bruxelles"] + ' événements';
   document.getElementById('badge-hai').textContent = counts["Hainaut"] + ' événements';
+  document.getElementById('badge-lg').textContent = counts["Liège"] + ' événements';
+  document.getElementById('badge-nam').textContent = counts["Namur"] + ' événements';
 
   // Render cards
   Object.entries(regionConfig).forEach(([region, cfg]) => {
@@ -1103,6 +1419,9 @@ function init() {
     const regionEvents = events.filter(e => e.region === region);
     grid.innerHTML = regionEvents.map(e => renderCard(e, cfg.cls)).join('');
   });
+
+  // Render salons professionnels
+  renderSalons();
 }
 
 function applyFilter(filter, btn) {
@@ -1110,8 +1429,8 @@ function applyFilter(filter, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   if (btn && btn.tagName === 'BUTTON') btn.classList.add('active');
 
-  const sections = ['bw', 'bxl', 'hai'];
-  const sectionMap = { bw: 'Brabant Wallon', bxl: 'Bruxelles', hai: 'Hainaut' };
+  const sections = ['bw', 'bxl', 'hai', 'lg', 'nam'];
+  const sectionMap = { bw: 'Brabant Wallon', bxl: 'Bruxelles', hai: 'Hainaut', lg: 'Liège', nam: 'Namur' };
 
   // Determine region visibility + card-level filter
   let regionFilter = null;  // null = all regions
