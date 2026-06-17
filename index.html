@@ -519,6 +519,14 @@
 <!-- MAIN -->
 <main>
 
+  <!-- TOUS LES ÉVÉNEMENTS (vue chronologique — affichée pour le filtre "Toutes") -->
+  <div class="section-header" id="section-all">
+    <div class="region-dot" style="background:#1a1a2e"></div>
+    <h2>📅 Tous les événements</h2>
+    <span class="count" id="badge-all" style="background:#1a1a2e">0</span>
+  </div>
+  <div class="events-grid" id="grid-all"></div>
+
   <!-- BRABANT WALLON -->
   <div class="section-header" id="section-bw" data-section="Brabant Wallon">
     <div class="region-dot bw"></div>
@@ -1462,15 +1470,23 @@ function init() {
   document.getElementById('badge-lg').textContent = counts["Liège"] + ' événements';
   document.getElementById('badge-nam').textContent = counts["Namur"] + ' événements';
 
-  // Render cards
+  // Render cards par région (utilisé pour les filtres région)
   Object.entries(regionConfig).forEach(([region, cfg]) => {
     const grid = document.getElementById(cfg.gridId);
     const regionEvents = events.filter(e => e.region === region);
     grid.innerHTML = regionEvents.map(e => renderCard(e, cfg.cls)).join('');
   });
 
+  // Render vue chronologique combinée "Tous les événements" (events déjà triés par date)
+  const regionClsMap = { "Brabant Wallon": "bw", "Bruxelles": "bxl", "Hainaut": "hai", "Liège": "lg", "Namur": "nam" };
+  document.getElementById('grid-all').innerHTML = events.map(e => renderCard(e, regionClsMap[e.region] || '')).join('');
+  document.getElementById('badge-all').textContent = events.length;
+
   // Render salons professionnels
   renderSalons();
+
+  // Vue par défaut : chronologique (Toutes)
+  applyFilter('all', document.querySelector('.filter-btn[data-filter="all"]'));
 }
 
 function applyFilter(filter, btn) {
@@ -1481,96 +1497,88 @@ function applyFilter(filter, btn) {
   const sections = ['bw', 'bxl', 'hai', 'lg', 'nam'];
   const sectionMap = { bw: 'Brabant Wallon', bxl: 'Bruxelles', hai: 'Hainaut', lg: 'Liège', nam: 'Namur' };
   const salonsView = document.getElementById('salons-view');
+  const allSection = document.getElementById('section-all');
+  const allGrid = document.getElementById('grid-all');
 
-  // ── Vue "Salons" : on masque toutes les régions et on affiche la vue salons ──
+  const ge = document.getElementById('globalEmpty');
+  if (ge) ge.remove();
+
+  const hideRegions = () => sections.forEach(s => {
+    document.getElementById('section-' + s).style.display = 'none';
+    document.getElementById('grid-' + s).style.display = 'none';
+  });
+  const hideAllView = () => {
+    allSection.style.display = 'none';
+    allGrid.style.display = 'none';
+  };
+
+  // ── Vue "Salons" ──
   if (filter === 'salons') {
-    sections.forEach(s => {
-      document.getElementById('section-' + s).style.display = 'none';
-      document.getElementById('grid-' + s).style.display = 'none';
-    });
-    const ge = document.getElementById('globalEmpty');
-    if (ge) ge.remove();
+    hideRegions();
+    hideAllView();
     salonsView.style.display = 'block';
     return;
   }
-  // Toute autre vue : on cache les salons
   salonsView.style.display = 'none';
 
-  // Determine region visibility + card-level filter
-  let regionFilter = null;  // null = all regions
-  let cardMatcher = null;   // fn(card) => bool, null = all cards
-
+  // ── Vue par région : regroupée par région (une seule section affichée) ──
   if (filter.startsWith('region:')) {
-    regionFilter = filter.slice(7);
-  } else if (filter === 'nextweek') {
-    const { mon, sun } = getNextWeekRange();
-    cardMatcher = card => {
-      const d = new Date(card.dataset.date);
-      return d >= mon && d <= sun;
-    };
-  } else if (filter === 'bnimember') {
-    cardMatcher = card => card.dataset.bni === 'true';
+    hideAllView();
+    const regionName = filter.slice(7);
+    sections.forEach(s => {
+      const secEl = document.getElementById('section-' + s);
+      const gridEl = document.getElementById('grid-' + s);
+      const visible = sectionMap[s] === regionName;
+      gridEl.querySelectorAll('.event-card').forEach(c => c.classList.remove('hidden'));
+      secEl.style.display = visible ? 'flex' : 'none';
+      gridEl.style.display = visible ? 'grid' : 'none';
+    });
+    return;
   }
 
-  sections.forEach(s => {
-    const secEl = document.getElementById('section-' + s);
-    const gridEl = document.getElementById('grid-' + s);
-    const regionName = sectionMap[s];
-    const regionVisible = regionFilter === null || regionFilter === regionName;
+  // ── Vues chronologiques combinées : all / nextweek / bnimember ──
+  hideRegions();
+  allSection.style.display = 'flex';
+  allGrid.style.display = 'grid';
 
-    if (!regionVisible) {
-      secEl.style.display = 'none';
-      gridEl.style.display = 'none';
-      return;
-    }
+  let cardMatcher = null;   // null = toutes les cartes
+  let headingText = '📅 Tous les événements';
+  if (filter === 'nextweek') {
+    const { mon, sun } = getNextWeekRange();
+    cardMatcher = card => { const d = new Date(card.dataset.date); return d >= mon && d <= sun; };
+    headingText = '📆 Semaine prochaine';
+  } else if (filter === 'bnimember') {
+    cardMatcher = card => card.dataset.bni === 'true';
+    headingText = '⭐ Événements Membres BNI';
+  }
+  allSection.querySelector('h2').textContent = headingText;
 
-    // Apply card-level filter (hide non-matching cards, remove any empty-state)
-    const emptyState = gridEl.querySelector('.empty-state');
-    if (emptyState) emptyState.remove();
-
-    const cards = gridEl.querySelectorAll('.event-card');
-    let visibleCount = 0;
-    cards.forEach(card => {
-      const match = cardMatcher === null ? true : cardMatcher(card);
-      card.classList.toggle('hidden', !match);
-      if (match) visibleCount++;
-    });
-
-    if (visibleCount === 0) {
-      // Hide section header when empty
-      secEl.style.display = 'none';
-      gridEl.style.display = 'none';
-    } else {
-      secEl.style.display = 'flex';
-      gridEl.style.display = 'grid';
-    }
+  let visibleCount = 0;
+  allGrid.querySelectorAll('.event-card').forEach(card => {
+    const match = cardMatcher === null ? true : cardMatcher(card);
+    card.classList.toggle('hidden', !match);
+    if (match) visibleCount++;
   });
+  document.getElementById('badge-all').textContent = visibleCount;
 
-  // Global empty state if ALL regions have 0 visible events
-  const anyVisible = sections.some(s => document.getElementById('section-' + s).style.display !== 'none');
-  const globalEmpty = document.getElementById('globalEmpty');
-  if (!anyVisible) {
-    if (!globalEmpty) {
-      const main = document.querySelector('main');
-      const msg = document.createElement('div');
-      msg.id = 'globalEmpty';
-      msg.className = 'empty-state';
-      msg.style.marginTop = '24px';
-      if (filter === 'bnimember') {
-        msg.innerHTML = `<h3>⭐ Aucun événement Membre BNI pour le moment</h3>
-          <p>Sois le premier à proposer le tien ! Les événements soumis par les membres apparaîtront ici.</p>
-          <a href="ajouter-evenement.html">➕ Ajouter un événement</a>`;
-      } else if (filter === 'nextweek') {
-        msg.innerHTML = `<h3>📆 Pas d'événement la semaine prochaine</h3>
-          <p>Aucun événement programmé pour les 7 prochains jours. Revenez bientôt ou proposez-en un.</p>
-          <a href="ajouter-evenement.html">➕ Ajouter un événement</a>`;
-      } else {
-        msg.innerHTML = `<h3>Aucun événement ne correspond à ce filtre</h3>`;
-      }
-      main.appendChild(msg);
+  if (visibleCount === 0) {
+    const main = document.querySelector('main');
+    const msg = document.createElement('div');
+    msg.id = 'globalEmpty';
+    msg.className = 'empty-state';
+    msg.style.marginTop = '24px';
+    if (filter === 'bnimember') {
+      msg.innerHTML = `<h3>⭐ Aucun événement Membre BNI pour le moment</h3>
+        <p>Sois le premier à proposer le tien ! Les événements soumis par les membres apparaîtront ici.</p>
+        <a href="ajouter-evenement.html">➕ Ajouter un événement</a>`;
+    } else if (filter === 'nextweek') {
+      msg.innerHTML = `<h3>📆 Pas d'événement la semaine prochaine</h3>
+        <p>Aucun événement programmé pour les 7 prochains jours. Revenez bientôt ou proposez-en un.</p>
+        <a href="ajouter-evenement.html">➕ Ajouter un événement</a>`;
+    } else {
+      msg.innerHTML = `<h3>Aucun événement ne correspond à ce filtre</h3>`;
     }
-  } else if (globalEmpty) {
-    globalEmpty.remove();
+    main.appendChild(msg);
   }
 }
 
