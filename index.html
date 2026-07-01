@@ -1357,8 +1357,16 @@ function init() {
   today.setHours(0, 0, 0, 0);
   const maxDate = new Date(today);
   maxDate.setDate(today.getDate() + 70);
+
+  // Ne rien afficher avant le jeudi de présentation (jeudi de la semaine en cours)
+  // getDay(): 0=dim … 4=jeu … 6=sam. On prend le jeudi courant, ou le prochain
+  // jeudi si on est déjà vendredi/samedi/dimanche.
+  const minDate = new Date(today);
+  minDate.setDate(today.getDate() + ((4 - today.getDay() + 7) % 7));
+
   for (let i = events.length - 1; i >= 0; i--) {
-    if (new Date(events[i].date) > maxDate) events.splice(i, 1);
+    const d = new Date(events[i].date);
+    if (d > maxDate || d < minDate) events.splice(i, 1);
   }
 
   // Week range
